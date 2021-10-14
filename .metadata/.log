@@ -1,0 +1,113 @@
+!SESSION 2021-10-13 21:59:36.766 -----------------------------------------------
+eclipse.buildId=M20100909-0800
+java.version=1.8.0_301
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_IN
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.equinox.p2.core 4 0 2021-10-13 22:03:14.924
+!MESSAGE Provisioning exception
+!STACK 1
+org.eclipse.equinox.p2.core.ProvisionException: No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.fail(AbstractRepositoryManager.java:391)
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.loadRepository(AbstractRepositoryManager.java:675)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:96)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:92)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.doLoad(LoadMetadataRepositoryJob.java:115)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.runModal(LoadMetadataRepositoryJob.java:100)
+	at org.eclipse.equinox.internal.p2.ui.sdk.PreloadingRepositoryHandler$2.runModal(PreloadingRepositoryHandler.java:82)
+	at org.eclipse.equinox.p2.operations.ProvisioningJob.run(ProvisioningJob.java:177)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.equinox.p2.metadata.repository 4 1000 2021-10-13 22:03:14.940
+!MESSAGE No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2021-10-13 22:04:26.102
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.102
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE Software being installed: m2e - Maven Integration for Eclipse (includes Incubating components) 1.15.0.20200310-1832 (org.eclipse.m2e.feature.feature.group 1.15.0.20200310-1832)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE Missing requirement: Maven Integration for Eclipse 1.15.0.20200305-1308 (org.eclipse.m2e.core 1.15.0.20200305-1308) requires 'bundle org.eclipse.osgi 3.10.0' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.102
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE From: m2e Marketplace 1.15.0.20200109-1036 (org.eclipse.m2e.discovery 1.15.0.20200109-1036)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE To: bundle org.eclipse.m2e.core [1.15.0,1.16.0)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.102
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE From: m2e - Maven Integration for Eclipse (includes Incubating components) 1.15.0.20200310-1832 (org.eclipse.m2e.feature.feature.group 1.15.0.20200310-1832)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.102
+!MESSAGE To: org.eclipse.m2e.discovery [1.15.0.20200109-1036]
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2021-10-13 22:04:26.122
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.122
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE Software being installed: m2e - Maven Integration for Eclipse (includes Incubating components) 1.15.0.20200310-1832 (org.eclipse.m2e.feature.feature.group 1.15.0.20200310-1832)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE Missing requirement: Maven Integration for Eclipse 1.15.0.20200305-1308 (org.eclipse.m2e.core 1.15.0.20200305-1308) requires 'bundle org.eclipse.osgi 3.10.0' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.122
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE From: m2e Marketplace 1.15.0.20200109-1036 (org.eclipse.m2e.discovery 1.15.0.20200109-1036)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE To: bundle org.eclipse.m2e.core [1.15.0,1.16.0)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2021-10-13 22:04:26.122
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE From: m2e - Maven Integration for Eclipse (includes Incubating components) 1.15.0.20200310-1832 (org.eclipse.m2e.feature.feature.group 1.15.0.20200310-1832)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2021-10-13 22:04:26.122
+!MESSAGE To: org.eclipse.m2e.discovery [1.15.0.20200109-1036]
+
+!ENTRY org.eclipse.equinox.p2.core 4 0 2021-10-13 22:05:43.176
+!MESSAGE Provisioning exception
+!STACK 1
+org.eclipse.equinox.p2.core.ProvisionException: No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.fail(AbstractRepositoryManager.java:391)
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.loadRepository(AbstractRepositoryManager.java:635)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:96)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:92)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.doLoad(LoadMetadataRepositoryJob.java:115)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.runModal(LoadMetadataRepositoryJob.java:100)
+	at org.eclipse.equinox.internal.p2.ui.sdk.PreloadingRepositoryHandler$2.runModal(PreloadingRepositoryHandler.java:82)
+	at org.eclipse.equinox.p2.operations.ProvisioningJob.run(ProvisioningJob.java:177)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.equinox.p2.metadata.repository 4 1000 2021-10-13 22:05:43.176
+!MESSAGE No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
+
+!ENTRY org.eclipse.equinox.p2.core 4 0 2021-10-13 22:08:34.874
+!MESSAGE Provisioning exception
+!STACK 1
+org.eclipse.equinox.p2.core.ProvisionException: No repository found at http://download.eclipse.org/technology/m2e/milestones/1.0.
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.fail(AbstractRepositoryManager.java:391)
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.loadRepository(AbstractRepositoryManager.java:635)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:96)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:92)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.doLoad(LoadMetadataRepositoryJob.java:115)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.runModal(LoadMetadataRepositoryJob.java:100)
+	at org.eclipse.equinox.internal.p2.ui.sdk.PreloadingRepositoryHandler$2.runModal(PreloadingRepositoryHandler.java:82)
+	at org.eclipse.equinox.p2.operations.ProvisioningJob.run(ProvisioningJob.java:177)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.equinox.p2.metadata.repository 4 1000 2021-10-13 22:08:34.874
+!MESSAGE No repository found at http://download.eclipse.org/technology/m2e/milestones/1.0.
+
+!ENTRY org.eclipse.equinox.p2.core 4 0 2021-10-13 22:08:34.874
+!MESSAGE Provisioning exception
+!STACK 1
+org.eclipse.equinox.p2.core.ProvisionException: No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.fail(AbstractRepositoryManager.java:391)
+	at org.eclipse.equinox.internal.p2.repository.helpers.AbstractRepositoryManager.loadRepository(AbstractRepositoryManager.java:635)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:96)
+	at org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager.loadRepository(MetadataRepositoryManager.java:92)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.doLoad(LoadMetadataRepositoryJob.java:115)
+	at org.eclipse.equinox.p2.ui.LoadMetadataRepositoryJob.runModal(LoadMetadataRepositoryJob.java:100)
+	at org.eclipse.equinox.internal.p2.ui.sdk.PreloadingRepositoryHandler$2.runModal(PreloadingRepositoryHandler.java:82)
+	at org.eclipse.equinox.p2.operations.ProvisioningJob.run(ProvisioningJob.java:177)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.equinox.p2.metadata.repository 4 1000 2021-10-13 22:08:34.874
+!MESSAGE No repository found at http://download.eclipse.org/tools/mylyn/update/helios.
