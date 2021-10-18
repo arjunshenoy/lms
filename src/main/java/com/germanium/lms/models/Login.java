@@ -1,6 +1,5 @@
 package com.germanium.lms.models;
-
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +10,10 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import lombok.Getter;
 import lombok.Setter;
+
+/**
+ * @author: Ajin Pius Michel
+ */
 
 @Entity
 @Table(name = "login")
