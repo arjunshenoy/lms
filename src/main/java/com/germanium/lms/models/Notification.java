@@ -10,6 +10,11 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+
+/**
+ * @author, Ajin Pius Michel
+ */
+
 @Entity
 @Table(name = "notification")
 @Getter
