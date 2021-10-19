@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,10 +26,12 @@ public class LeaveHistoryId implements Serializable{
 
 	@Column (name = "employee_id")
 	@NotNull
+	@ApiModelProperty(value = "employeeId")
 	private int employeeId;
 	
 	@Column (name = "date_of_application")
 	@NotNull
+	@ApiModelProperty(value = "dateOfApplication")
 	private Date dateOfApplication;
 
 }
