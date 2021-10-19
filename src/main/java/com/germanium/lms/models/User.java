@@ -1,5 +1,7 @@
 package com.germanium.lms.models;
 
+// @author: Chinmay Jose K M
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
