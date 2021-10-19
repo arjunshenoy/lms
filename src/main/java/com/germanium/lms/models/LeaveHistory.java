@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Embeddable
+@ApiModel(value = "LeaveHistory", description = "Class which holds the Leave History details")
 public class LeaveHistory implements Serializable {
 
 	/**
@@ -35,31 +38,40 @@ public class LeaveHistory implements Serializable {
 	private LeaveHistoryId leaveHistoryId;
 	
 	@Column (name = "leave_id")
+	@ApiModelProperty(value = "leaveId")
 	private int leaveId;
 	
 	@Column (name = "department_id")
+	@ApiModelProperty(value = "departmentId")
 	private int departmentId;
 	
 	@Column (name = "from_date")
+	@ApiModelProperty(value = "fromDate")
 	private Date fromDate;
 	
 	@Column (name = "to_date")
+	@ApiModelProperty(value = "toDate")
 	private Date toDate;
 	
 	@Column (name = "leave_status")
+	@ApiModelProperty(value = "leaveStatus")
 	private String leaveStatus;
 	
 	@Column (name = "reason")
+	@ApiModelProperty(value = "reason")
 	private String reason;
 	
 	@Column (name = "comments")
+	@ApiModelProperty(value = "comments")
 	private String comments;
 	
 	@Column (name = "decision_date")
+	@ApiModelProperty(value = "decisionDate")
 	private Date decisionDate;
 	
 	@Column (name = "updated_ts")
 	@UpdateTimestamp
+	@ApiModelProperty(value = "updatedTs")
 	private Timestamp updatedTs;
 	
 	
