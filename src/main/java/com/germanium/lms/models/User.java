@@ -63,12 +63,9 @@ public class User {
     @ApiModelProperty(value = "isPermanent")
     private boolean isPermanent;
     
-    @Column(name = "department_id")
-    @ApiModelProperty(value = "departmentId")
-    private int departmentId;
-    
     @OneToOne
     @JoinColumn(name="department_id")
+    @ApiModelProperty(value = "departmentId")
     private Department department; 
     
     @Column(name = "role")
