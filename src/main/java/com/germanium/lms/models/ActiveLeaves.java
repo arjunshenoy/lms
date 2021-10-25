@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +21,11 @@ import lombok.Setter;
  * @author, Teena Joseph
  */
 @Entity
-@Table (name = "active_leaves")
+@Table(name = "active_leaves")
 @Getter
 @Setter
 @Embeddable
+@ApiModel(value = "ActiveLeaves", description = "Class holds the details of active leaves")
 public class ActiveLeaves implements Serializable {
 	/**
 	 * 
@@ -31,26 +34,33 @@ public class ActiveLeaves implements Serializable {
 
 	@EmbeddedId
 	private LeaveHistoryId leaveHistoryId;
-	
-	@Column (name = "leave_id")
+
+	@Column(name = "leave_id")
+	@ApiModelProperty(value = "leaveId")
 	private int leaveId;
-	
-	@Column (name = "department_id")
+
+	@Column(name = "department_id")
+	@ApiModelProperty(value = "departmentId")
 	private int departmentId;
-	
-	@Column (name = "from_date")
+
+	@Column(name = "from_date")
+	@ApiModelProperty(value = "fromDate")
 	private Date fromDate;
-	
-	@Column (name = "to_date")
+
+	@Column(name = "to_date")
+	@ApiModelProperty(value = "toDate")
 	private Date toDate;
-		
-	@Column (name = "reason")
+
+	@Column(name = "reason")
+	@ApiModelProperty(value = "reason")
 	private String reason;
-	
-	@Column (name = "comments")
+
+	@Column(name = "comments")
+	@ApiModelProperty(value = "comments")
 	private String comments;
 
-	@Column (name = "updated_ts")
+	@Column(name = "updated_ts")
 	@UpdateTimestamp
+	@ApiModelProperty(value = "updatedTs")
 	private Timestamp updatedTs;
 }
