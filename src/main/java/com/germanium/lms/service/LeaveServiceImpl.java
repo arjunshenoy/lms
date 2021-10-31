@@ -9,23 +9,22 @@ import org.springframework.stereotype.Service;
 import com.germanium.lms.models.LeaveRules;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 
-
 @Service
 public class LeaveServiceImpl implements ILeaveService {
-	
+
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
-				
+
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
 	}
 
 	@Override
 	public LeaveRules findLeavesById(Integer leaveId) throws Exception {
 		Optional<LeaveRules> optionalLeave = leaveRulesRepo.findById(leaveId);
-		if (!optionalLeave.isPresent() ) {
+		if (!optionalLeave.isPresent()) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
 		return optionalLeave.get();
@@ -43,6 +42,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		leaveRulesRepo.save(leaveRule);
 		
+
 	}
 
 	@Override
@@ -52,6 +52,5 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		leaveRulesRepo.deleteById(leaveId);
 	}
-	
 
 }
