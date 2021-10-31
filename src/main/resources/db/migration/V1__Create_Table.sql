@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS `login` (
-    `employee_id` INT NOT NULL,
-    `email` VARCHAR(30) NOT NULL,
-    `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`)
-);
-
 CREATE TABLE IF NOT EXISTS `Department` (
     `department_id` int NOT NULL,
     `department_name` varchar(255)  NOT NULL,
@@ -12,36 +5,6 @@ CREATE TABLE IF NOT EXISTS `Department` (
 	PRIMARY KEY (`department_id`)
 );
 
-CREATE TABLE  IF NOT EXISTS `User` (
-    `employee_id` int  NOT NULL,
-    `first_name` varchar(255)  NOT NULL,
-    `middle_name` varchar(255),
-    `last_name` varchar(255)  NOT NULL,
-	`phone_number` varchar(15),
-	`gender` varchar(15),
-	`dob` Date  NOT NULL,
-	`date_of_joining` DATE  NOT NULL,
-	`is_permanent` BOOLEAN,
-	`department_id` int,
-	`role` varchar(255),
-    `address` varchar(255),
-	`created_timestamp` TIMESTAMP,
-	`updated_timestamp` TIMESTAMP,
-    `is_active` BOOLEAN,
-	 PRIMARY KEY (`employee_id`),
-     FOREIGN KEY (`department_id`) REFERENCES Department(`department_id`)
-);
-
-
-CREATE TABLE IF NOT EXISTS `notification` (
-    `notification_id` INT NOT NULL,
-    `employee_id`INT NOT NULL,
-    `message` VARCHAR(30) NOT NULL,
-    `is_read` BOOLEAN DEFAULT FALSE,
-    `title` VARCHAR(30) NOT NULL,
-    `date` DATE,
-    PRIMARY KEY(`notification_id`)
-);
 
 CREATE TABLE IF NOT EXISTS `leave_history` (
     `employee_id` INT NOT NULL,
@@ -71,15 +34,14 @@ CREATE TABLE IF NOT EXISTS `active_leaves` (
     PRIMARY KEY(`employee_id`,`date_of_application`)
 );
 
-CREATE TABLE IF NOT EXISTS `login` (
-    `employee_id` INT NOT NULL,
-    `email` VARCHAR(30) NOT NULL,
-    `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`)
-);
 CREATE TABLE IF NOT EXISTS `leave_rules` (
-    `leave_id` INT NOT NULL,
+    `leave_id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(150) NOT NULL,
+	`lapse_date` DATE,
+	`carry_over_count` FLOAT NOT NULL,
+	`max_leaves_count` FLOAT NOT NULL,
+	`cost_incurred` FLOAT NOT NULL,
+	`combinable_leaves` VARCHAR(2000) NOT NULL,
     `number_of_leaves` FLOAT NOT NULL,
     `rule_expression` VARCHAR (2000),     
     PRIMARY KEY(`leave_id`)
@@ -92,10 +54,8 @@ CREATE TABLE IF NOT EXISTS `leave_stats`(
 	FOREIGN KEY (`leave_id`) REFERENCES leave_rules(`leave_id`)
 );
 
-CREATE TABLE IF NOT EXISTS `substitution` (
-	`substitute_id` INT NOT NULL,
-	`leave_id` INT NOT NULL,
-	`date_of_approval` DATE NOT NULL,
-	PRIMARY KEY (`substitute_id`,`leave_id`),
-	FOREIGN KEY (`leave_id`) REFERENCES leave_rules(`leave_id`)
-);
+
+INSERT INTO `leave_rules`
+VALUES (1,'Casual Leave', '2021-12-01',5.5, 10,10,'ABC', 20, 'abc')
+
+
