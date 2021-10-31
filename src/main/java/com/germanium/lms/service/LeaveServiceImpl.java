@@ -3,6 +3,8 @@ package com.germanium.lms.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 @Service
 public class LeaveServiceImpl implements ILeaveService {
 
+	Logger logger = LoggerFactory.getLogger(LeaveServiceImpl.class);
+	
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
 
@@ -32,6 +36,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public List<LeaveRules> createLeaveRules(List<LeaveRules> leaveType) {
+		logger.info("Saving details into repository");
 		return (List<LeaveRules>) leaveRulesRepo.saveAll(leaveType);
 	}
 
@@ -41,8 +46,6 @@ public class LeaveServiceImpl implements ILeaveService {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
 		leaveRulesRepo.save(leaveRule);
-		
-
 	}
 
 	@Override
