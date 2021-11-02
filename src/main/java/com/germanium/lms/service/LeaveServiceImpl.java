@@ -42,9 +42,11 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public void updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws Exception {
+		
 		if (!leaveRulesRepo.existsById(leaveId)) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
+		logger.info("Updating Leave Details");
 		leaveRulesRepo.save(leaveRule);
 	}
 
