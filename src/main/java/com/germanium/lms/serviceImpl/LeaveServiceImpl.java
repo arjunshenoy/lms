@@ -51,12 +51,14 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public void deleteLeaveRules(Integer leaveId) throws Exception {
+	public boolean deleteLeaveRules(Integer leaveId) throws Exception {
 		logger.info("Deleting Leave Details");
 		if (!leaveRulesRepo.existsById(leaveId)) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
 		leaveRulesRepo.deleteById(leaveId);
+		logger.info("Successfully deleted leave with ID: {}", leaveId);
+		return true;
 	}
 
 }

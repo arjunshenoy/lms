@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,8 @@ import com.germanium.lms.service.ILeaveService;
 @RequestMapping(value = "/api/v1/leave", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LeaveController {
 
+	Logger logger = LoggerFactory.getLogger(LeaveController.class);
+
 	@Autowired
 	ILeaveService leaveService;
 
@@ -32,31 +36,32 @@ public class LeaveController {
 	public ResponseEntity<List<LeaveRules>> getLeaveRules() {
 		return ResponseEntity.ok().body(leaveService.getLeaveRules());
 	}
-	
+
 	@GetMapping("leaveType/{leaveId}")
 	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) throws Exception {
 		return ResponseEntity.ok().body(leaveService.findLeavesById(leaveId));
-		
+
 	}
-	
+
 	@PostMapping("leaveType")
 	public ResponseEntity<List<LeaveRules>> createLeaveRules(@Valid @RequestBody List<LeaveRules> leaveType) {
 		List<LeaveRules> leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
 	}
-	
+
 	@PutMapping("leaveType/{leaveId}")
 	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
 			@Valid @RequestBody LeaveRules leaveRule) throws Exception {
-		
+
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
-		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION).body("Leave type Updated Successfully");
+		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
+				.body("Leave type Updated Successfully");
 	}
-	
+
 	@DeleteMapping(value = "leaveType/{leaveId}")
 	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId")Integer leaveId) throws Exception
 	{
-		leaveService.deleteLeaveRules(leaveId);
-		return ResponseEntity.noContent().build();
+		logger.info("Delete request received for leave ID : {}", leaveId);
+		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION).body(leaveService.deleteLeaveRules(leaveId));
 	}
 }
