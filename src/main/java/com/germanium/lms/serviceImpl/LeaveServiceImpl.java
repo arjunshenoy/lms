@@ -22,7 +22,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
-
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
 	}
 
@@ -53,6 +52,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public void deleteLeaveRules(Integer leaveId) throws Exception {
+		logger.info("Deleting Leave Details");
 		if (!leaveRulesRepo.existsById(leaveId)) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
