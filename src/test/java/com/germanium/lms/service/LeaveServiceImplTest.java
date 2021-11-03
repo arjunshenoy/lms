@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.aspectj.lang.annotation.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.germanium.lms.models.LeaveRules;
 import com.germanium.lms.repository.ILeaveRulesRepository;
+import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 
 
 @SpringBootTest
@@ -35,7 +38,7 @@ public class LeaveServiceImplTest {
 	@Autowired
 	private LeaveServiceImpl leaveServiceImpl;
 
-	@Mock
+	@Autowired
 	private ILeaveRulesRepository leaveRulesRepository;
 
 	@Test
@@ -88,13 +91,12 @@ public class LeaveServiceImplTest {
 		List<LeaveRules> leaveRuleList = createLeaveRulesList();
 		leaveRulesRepository.saveAll(leaveRuleList);
 		leaveRuleList.get(0).setName("sick leave");
-		//when(leaveRulesRepository.existsById(any())).thenReturn(true);
-		leaveServiceImpl.updateLeaveRules(1,leaveRuleList.get(0));
+		LeaveRules updatedRule = leaveServiceImpl.updateLeaveRules(1,leaveRuleList.get(0));
+		assertEquals("sick leave", updatedRule.getName());
 		List<LeaveRules> leave = (List<LeaveRules>) leaveRulesRepository.findAll();
-		assertEquals("sick leave",leave.get(0).getName());
+		assertEquals("sick leave", leave.get(0).getName());
+		assertEquals(1, leave.size());
 	}
-
-
 
 	/*
 	 * @Test public void deleteLeaveRulesTest() throws Exception{
@@ -103,8 +105,5 @@ public class LeaveServiceImplTest {
 	 * leaveServiceImpl.deleteLeaveRules(1);
 	 * assertThat(leaveRulesRepository.existsById(1)).isFalse(); }
 	 */
-
-
-
 
 }

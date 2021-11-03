@@ -1,4 +1,4 @@
-package com.germanium.lms.service;
+package com.germanium.lms.serviceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.germanium.lms.models.LeaveRules;
 import com.germanium.lms.repository.ILeaveRulesRepository;
+import com.germanium.lms.service.ILeaveService;
 
 @Service
 public class LeaveServiceImpl implements ILeaveService {
@@ -41,13 +42,13 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public void updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws Exception {
+	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws Exception {
 		
 		if (!leaveRulesRepo.existsById(leaveId)) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
 		logger.info("Updating Leave Details");
-		leaveRulesRepo.save(leaveRule);
+		return leaveRulesRepo.save(leaveRule);
 	}
 
 	@Override

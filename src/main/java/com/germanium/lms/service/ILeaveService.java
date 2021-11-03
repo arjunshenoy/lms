@@ -13,7 +13,7 @@ public interface ILeaveService {
 
 	public List<LeaveRules> createLeaveRules(List<LeaveRules> leaveType);
 	
-	public void updateLeaveRules(Integer leaveId,LeaveRules leaveRule) throws Exception;
+	public LeaveRules updateLeaveRules(Integer leaveId,LeaveRules leaveRule) throws Exception;
 
 	public void deleteLeaveRules(Integer leaveId) throws Exception;
 
