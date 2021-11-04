@@ -37,7 +37,7 @@ jobs:
        push: ${{ GitHub.event_name != 'pull_request' &&  github.ref == 'refs/heads/dev' }}
        labels: ${{ steps.meta.outputs.labels }}
        tags: |
-           arjunkshenoy/lms-common-service:latest
+           arjunkshenoy/lms-leave-service:latest
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
       
