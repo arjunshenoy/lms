@@ -1,6 +1,8 @@
 package com.germanium.lms.serviceImpl;
 
 import java.util.List;
+import java.util.ArrayList;
+
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -9,16 +11,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.models.LeaveStats;
+import com.germanium.lms.models.LeaveStatsId;
 import com.germanium.lms.repository.ILeaveRulesRepository;
+import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveService;
 
 @Service
 public class LeaveServiceImpl implements ILeaveService {
 
 	Logger logger = LoggerFactory.getLogger(LeaveServiceImpl.class);
-	
+
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
+
+	@Autowired
+	ILeaveStatisticsRepository leaveStatsRepo;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -42,7 +50,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws Exception {
-		
+
 		if (!leaveRulesRepo.existsById(leaveId)) {
 			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
 		}
@@ -59,6 +67,26 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveRulesRepo.deleteById(leaveId);
 		logger.info("Successfully deleted leave with ID: {}", leaveId);
 		return true;
+	}
+
+	@Override
+	public void addLeaveStatsForNewUsers(Integer userId) {
+		logger.info("Creating Leave Statistics for User Id:" + userId);
+
+		List<LeaveRules> leaveRules = (List<LeaveRules>) leaveRulesRepo.findAll();
+		List<LeaveStats> leaveStatsList = new ArrayList<LeaveStats>();
+		leaveRules.stream().forEach(leave -> {
+			LeaveStatsId id = new LeaveStatsId();
+			id.setEmployeeId(userId);
+			id.setLeaveId(leave.getLeaveId());
+			LeaveStats ls = new LeaveStats();
+			ls.setId(id);
+			ls.setLeaveCount(leave.getLeaveCount());
+			leaveStatsList.add(ls);
+		});
+		leaveStatsRepo.saveAll(leaveStatsList);
+		logger.info("Rule statistics creation done successfully" + userId);
+
 	}
 
 }
