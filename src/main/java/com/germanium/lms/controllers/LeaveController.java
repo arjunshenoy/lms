@@ -73,7 +73,7 @@ public class LeaveController {
 		List<LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
 		System.out.println(lstats.get(0).getLeaveCount());
 		return ResponseEntity.ok().body(lstats);
-
+	}
 	@PostMapping("addLeaveStats/{userId}")
 	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
 		leaveService.addLeaveStatsForNewUsers(userId);
