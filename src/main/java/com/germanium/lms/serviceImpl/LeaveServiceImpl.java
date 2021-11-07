@@ -80,7 +80,8 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Retrieving Leave stats Details");
 		List<LeaveStats> leaveStats = leaveStatsRepo.findByEmployeeId(employeeId);
 		return leaveStats;
-    
+	}
+	
 	@Override
 	public void addLeaveStatsForNewUsers(Integer userId) {
 		logger.info("Creating Leave Statistics for User Id:" + userId);
