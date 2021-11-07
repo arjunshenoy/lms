@@ -28,8 +28,28 @@ public class LeaveStatsId implements Serializable {
 	@ApiModelProperty(name = "leaveId")
 	private int leaveId;
 
-	@Column(name = "emplopyee_id")
+	@Column(name = "employee_id")
 	@ApiModelProperty(name = "employeeId")
 	private int employeeId;
+
+	public int getLeaveId() {
+		return leaveId;
+	}
+
+	public void setLeaveId(int leaveId) {
+		this.leaveId = leaveId;
+	}
+
+	public int getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 }

@@ -13,9 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
-*
-* @author Arjun Krishna Shenoy
-*/
+ *
+ * @author Arjun Krishna Shenoy
+ */
 
 @Entity
 @Table(name = "leave_stats")
@@ -23,9 +23,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
 public class LeaveStats implements Serializable {
-
 	/**
 	 * 
 	 */
@@ -37,5 +35,27 @@ public class LeaveStats implements Serializable {
 	@ApiModelProperty(value = "leaveCount")
 	@Column(name = "number_of_leaves")
 	private float leaveCount;
+	
+	public LeaveStatsId getId() {
+		return id;
+	}
+
+	public void setId(LeaveStatsId id) {
+		this.id = id;
+	}
+
+	public float getLeaveCount() {
+		return leaveCount;
+	}
+
+	public void setLeaveCount(float leaveCount) {
+		this.leaveCount = leaveCount;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	
 
 }

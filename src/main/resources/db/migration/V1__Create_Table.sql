@@ -56,6 +56,13 @@ CREATE TABLE IF NOT EXISTS `leave_stats`(
 
 
 INSERT INTO `leave_rules`
-VALUES (1,'Casual Leave', '2021-12-01',5.5, 10,10,'ABC', 20, 'abc')
+VALUES (1,'Casual Leave', '2021-12-01',5.5, 10,10,'ABC', 20, 'abc');
 
+INSERT INTO `leave_rules`
+VALUES (2,'Sick Leave', '2021-12-01',5.5, 10,10,'ABC', 20, 'abc');
 
+INSERT INTO `leave_stats`
+VALUES (1,1,2);
+
+INSERT INTO `leave_stats`
+VALUES (1,2,2);

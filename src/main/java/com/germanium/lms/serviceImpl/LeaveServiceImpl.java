@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.models.LeaveStats;
 import com.germanium.lms.repository.ILeaveRulesRepository;
+import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveService;
 
 @Service
@@ -19,6 +21,10 @@ public class LeaveServiceImpl implements ILeaveService {
 	
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
+	
+	@Autowired
+	ILeaveStatisticsRepository leaveStatsRepo;
+	
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -59,6 +65,13 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveRulesRepo.deleteById(leaveId);
 		logger.info("Successfully deleted leave with ID: {}", leaveId);
 		return true;
+	}
+
+	@Override
+	public List<LeaveStats> getLeaveStatsById(Integer employeeId) {
+		logger.info("Retrieving Leave stats Details");
+		List<LeaveStats> leaveStats = leaveStatsRepo.findByEmployeeId(employeeId);
+		return leaveStats;
 	}
 
 }

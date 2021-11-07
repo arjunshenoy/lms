@@ -3,6 +3,7 @@ package com.germanium.lms.service;
 import java.util.List;
 
 import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.models.LeaveStats;
 
 
 public interface ILeaveService {
@@ -17,5 +18,5 @@ public interface ILeaveService {
 
 	public boolean deleteLeaveRules(Integer leaveId) throws Exception;
 
-	
+	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 }
