@@ -21,9 +21,11 @@ import lombok.Setter;
 @Table(name = "leave_stats")
 @ApiModel(value = "LeaveStats", description = "Class containing the leave statistics for each user")
 
+
 @Getter
 @Setter
 public class LeaveStats implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -58,4 +60,21 @@ public class LeaveStats implements Serializable {
 
 	
 
+	
+
+	public LeaveStatsId getId() {
+		return id;
+	}
+
+	public void setId(LeaveStatsId id) {
+		this.id = id;
+	}
+
+	public float getLeaveCount() {
+		return leaveCount;
+	}
+
+	public void setLeaveCount(float leaveCount) {
+		this.leaveCount = leaveCount;
+	}
 }

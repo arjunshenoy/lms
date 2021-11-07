@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  mysql_leave_db:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+       MYSQL_DATABASE: 'lms_leave'
+       MYSQL_USER: 'admin'
+       MYSQL_PASSWORD: 'password'
+       MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - 3316:3306 
+    healthcheck:
+      test: "exit 0"
+  leave-service:
+    depends_on:
+        mysql_leave_db:
+            condition: service_healthy
+    build: .
+    ports:
+      - 8102:8102
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:mysql://mysql_leave_db:3306/lms_leave?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true",
+        "spring.datasource.username" : "admin",
+        "spring.datasource.password" : "password",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
+        "spring.jpa.hibernate.ddl-auto" : "none",
+        "spring.flyway.url":"jdbc:mysql://mysql_leave_db:3306/lms_leave?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true",
+        "spring.flyway.user":"root",
+        "spring.flyway.password":"password"
+      }'
+    volumes:
+    - .m2:/root/.m2
+    stdin_open: true
+    tty: true

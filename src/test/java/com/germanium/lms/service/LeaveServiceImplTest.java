@@ -100,5 +100,7 @@ public class LeaveServiceImplTest {
 			assertThat(leaveRulesRepository.existsById(1)).isFalse(); 
 				
 	}
+	
+	
 
 }

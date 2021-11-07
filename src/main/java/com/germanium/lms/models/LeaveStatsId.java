@@ -15,8 +15,6 @@ import lombok.Setter;
 */
 
 @Embeddable
-@Getter
-@Setter
 public class LeaveStatsId implements Serializable {
 
 	/**
@@ -48,8 +46,10 @@ public class LeaveStatsId implements Serializable {
 		this.employeeId = employeeId;
 	}
 
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 
 }

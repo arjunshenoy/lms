@@ -17,6 +17,8 @@ public interface ILeaveService {
 	public LeaveRules updateLeaveRules(Integer leaveId,LeaveRules leaveRule) throws Exception;
 
 	public boolean deleteLeaveRules(Integer leaveId) throws Exception;
+	
+	public void addLeaveStatsForNewUsers(Integer userId);
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 }
