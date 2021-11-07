@@ -67,7 +67,7 @@ public class LeaveController {
 	}
 	
 
-	@GetMapping("getLeaveStats/{employeeId}")
+	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
 		logger.info("Fetching Leave Stats details for employee Id: " +employeeId);
 		List<LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
