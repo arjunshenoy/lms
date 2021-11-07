@@ -64,4 +64,9 @@ public class LeaveController {
 		logger.info("Delete request received for leave ID : {}", leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION).body(leaveService.deleteLeaveRules(leaveId));
 	}
+	
+	@PostMapping("addLeaveStats/{userId}")
+	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
+		leaveService.addLeaveStatsForNewUsers(userId);
+	}
 }
