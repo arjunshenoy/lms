@@ -29,10 +29,6 @@ public class LeaveServiceImpl implements ILeaveService {
 	
 	@Autowired
 	ILeaveStatisticsRepository leaveStatsRepo;
-	
-
-	@Autowired
-	ILeaveStatisticsRepository leaveStatsRepo;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
