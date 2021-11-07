@@ -57,24 +57,4 @@ public class LeaveStats implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
-	
-
-	
-
-	public LeaveStatsId getId() {
-		return id;
-	}
-
-	public void setId(LeaveStatsId id) {
-		this.id = id;
-	}
-
-	public float getLeaveCount() {
-		return leaveCount;
-	}
-
-	public void setLeaveCount(float leaveCount) {
-		this.leaveCount = leaveCount;
-	}
 }
