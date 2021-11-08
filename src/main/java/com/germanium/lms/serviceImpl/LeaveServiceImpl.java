@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.germanium.lms.models.LeaveRules;
 import com.germanium.lms.models.LeaveStats;
+
 import com.germanium.lms.models.LeaveStatsId;
+
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveService;
@@ -24,7 +26,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
-
+	
 	@Autowired
 	ILeaveStatisticsRepository leaveStatsRepo;
 
@@ -70,6 +72,13 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
+	public List<LeaveStats> getLeaveStatsById(Integer employeeId) {
+		logger.info("Retrieving Leave stats Details");
+		List<LeaveStats> leaveStats = leaveStatsRepo.findByEmployeeId(employeeId);
+		return leaveStats;
+	}
+	
+	@Override
 	public void addLeaveStatsForNewUsers(Integer userId) {
 		logger.info("Creating Leave Statistics for User Id:" + userId);
 
@@ -86,6 +95,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		});
 		leaveStatsRepo.saveAll(leaveStatsList);
 		logger.info("Rule statistics creation done successfully" + userId);
+
 
 	}
 

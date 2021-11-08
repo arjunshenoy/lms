@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.models.LeaveStats;
 import com.germanium.lms.service.ILeaveService;
 
 @RestController
@@ -65,8 +66,17 @@ public class LeaveController {
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION).body(leaveService.deleteLeaveRules(leaveId));
 	}
 	
+
+	@GetMapping("leaveStats/{employeeId}")
+	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
+		logger.info("Fetching Leave Stats details for employee Id: " +employeeId);
+		List<LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
+		System.out.println(lstats.get(0).getLeaveCount());
+		return ResponseEntity.ok().body(lstats);
+	}
 	@PostMapping("addLeaveStats/{userId}")
 	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
 		leaveService.addLeaveStatsForNewUsers(userId);
+
 	}
 }

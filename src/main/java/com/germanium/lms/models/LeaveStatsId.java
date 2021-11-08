@@ -45,8 +45,11 @@ public class LeaveStatsId implements Serializable {
 	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
-	
-	
-	
+
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 
 }
