@@ -1,12 +1,14 @@
 package com.germanium.lms.utils;
 
 import java.util.Date;
+import java.util.function.Function;
 
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.LeaveHistoryId;
+import com.germanium.lms.model.factory.Leave;
 
-public class LeaveHistoryHelper {
+public class LeaveHelper {
 
 	public static LeaveHistory copyActiveToHistory(ActiveLeaves activeLeave) {
 
@@ -26,6 +28,30 @@ public class LeaveHistoryHelper {
 		leaveHistory.setReason(activeLeave.getReason());
 		leaveHistory.setToDate(activeLeave.getToDate());
 		return leaveHistory;
+
+	}
+
+	public static ActiveLeaves dtoToModelMapper(Leave leaveRequest) {
+		ActiveLeaves activeLeave = new ActiveLeaves();
+
+		Function<Leave, ActiveLeaves> converter = new Function<Leave, ActiveLeaves>() {
+
+			public ActiveLeaves apply(Leave t) {
+				activeLeave.setEmployeeId(t.getEmployeeId());
+				activeLeave.setDateOfApplication(t.getDateOfApplication());
+				activeLeave.setLeaveId(t.getLeaveId());
+				activeLeave.setDepartmentId(t.getDepartmentId());
+				activeLeave.setFromDate(t.getFromDate());
+				activeLeave.setToDate(t.getToDate());
+				activeLeave.setUpdatedTs(t.getUpdatedTs());
+				activeLeave.setDocument(t.getDocument());
+				activeLeave.setPay(t.getPay());
+				activeLeave.setPayScale(t.getPayScale());
+				activeLeave.setReason(t.getReason());
+				return activeLeave;
+			}
+		};
+		return converter.apply(leaveRequest);
 
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.factory.Leave;
 
 public interface ILeaveService {
 
@@ -22,7 +23,7 @@ public interface ILeaveService {
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 
-	public ActiveLeaves createLeaveRequest(ActiveLeaves leaveRequest) throws Exception;
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
 	

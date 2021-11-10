@@ -17,12 +17,13 @@ import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
+import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveService;
-import com.germanium.lms.utils.LeaveHistoryHelper;
+import com.germanium.lms.utils.LeaveHelper;
 
 @Service
 public class LeaveServiceImpl implements ILeaveService {
@@ -110,7 +111,7 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public ActiveLeaves createLeaveRequest(ActiveLeaves leaveRequest) throws Exception {
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception {
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
@@ -125,10 +126,8 @@ public class LeaveServiceImpl implements ILeaveService {
 			throw new Exception("User Dosent Have enough Leaves");
 		}
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() - diff);
-		ActiveLeaves savedLeave = activeLeaveRepo.save(leaveRequest);
+		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
 		leaveStatsRepo.save(leaveStats.get());
-		
-		
 
 		return savedLeave;
 	}
@@ -150,7 +149,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			throw new ResourceNotFoundException("Leave Request with id: not found" + leaveRequestId);
 		}
 
-		LeaveHistory leaveHistory = LeaveHistoryHelper.copyActiveToHistory(optionalLeave.get());
+		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
 
 		if (decision.equals("approve")) {
 			leaveHistory.setLeaveStatus("APPROVED");
@@ -166,9 +165,10 @@ public class LeaveServiceImpl implements ILeaveService {
 		} else {
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
-		
-		if(savedHistory.getLeaveStatus().equals("REJECTED")) {
-			long diffInMillies = Math.abs(optionalLeave.get().getToDate().getTime() - optionalLeave.get().getFromDate().getTime());
+
+		if (savedHistory.getLeaveStatus().equals("REJECTED")) {
+			long diffInMillies = Math
+					.abs(optionalLeave.get().getToDate().getTime() - optionalLeave.get().getFromDate().getTime());
 			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 			LeaveStatsId statsId = new LeaveStatsId();
 			statsId.setEmployeeId(optionalLeave.get().getEmployeeId());
@@ -181,7 +181,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			leaveStatsRepo.save(leaveStats.get());
 
 		}
-		
+
 		return true;
 
 	}

@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS `active_leaves` (
     `department_id` INT NOT NULL,
     `from_date` DATE NOT NULL,
     `to_date` DATE NOT NULL,
-    `reason` VARCHAR(20) NOT NULL,
-    `comments` VARCHAR(20) NOT NULL,
+    `reason` VARCHAR(20) ,
+    `comments` VARCHAR(20) ,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(`leave_request_id`)
 );

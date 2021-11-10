@@ -1,94 +1,42 @@
-package com.germanium.lms.model;
+package com.germanium.lms.model.dto;
 
-import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+public class LeaveRequestDto {
 
-import org.hibernate.annotations.UpdateTimestamp;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-/**
- * @author, Teena Joseph
- */
-@Entity
-@Table(name = "active_leaves")
-
-@ApiModel(value = "ActiveLeaves", description = "Class holds the details of active leaves")
-public class ActiveLeaves implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@Column(name = "leave_request_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(value = "leaveRequestId")
 	private int leaveRequestId;
 
-	@Column(name = "employee_id")
-	@NotNull
-	@ApiModelProperty(value = "employeeId")
 	private int employeeId;
 
-	@Column(name = "date_of_application")
-	@NotNull
-	@ApiModelProperty(value = "dateOfApplication")
 	private Date dateOfApplication;
 
-	@Column(name = "leave_id")
-	@ApiModelProperty(value = "leaveId")
 	private int leaveId;
 
-	@Column(name = "department_id")
-	@ApiModelProperty(value = "departmentId")
 	private int departmentId;
 
-	@Column(name = "from_date")
-	@ApiModelProperty(value = "fromDate")
 	private Date fromDate;
 
-	@Column(name = "to_date")
-	@ApiModelProperty(value = "toDate")
 	private Date toDate;
 
-	@Column(name = "reason")
-	@ApiModelProperty(value = "reason")
 	private String reason;
 
-	@Column(name = "comments")
-	@ApiModelProperty(value = "comments")
 	private String comments;
 
-	@Column(name = "updated_ts")
-	@UpdateTimestamp
-	@ApiModelProperty(value = "updatedTs")
 	private Timestamp updatedTs;
-
-	@Transient
+	
 	private Blob document;
-
-	@Transient
-	private String leaveName;
-
-	@Transient
+	
 	private Float pay;
-
-	@Transient
+	
 	private Float payScale;
-
+	
+	private String addressDuringLeave;
+	
+	private Float houseRentAllowance;
+	
+	private String leaveName;
 
 	public int getLeaveRequestId() {
 		return leaveRequestId;
@@ -170,14 +118,6 @@ public class ActiveLeaves implements Serializable {
 		this.updatedTs = updatedTs;
 	}
 
-	public String getLeaveName() {
-		return leaveName;
-	}
-
-	public void setLeaveName(String leaveName) {
-		this.leaveName = leaveName;
-	}
-
 	public Blob getDocument() {
 		return document;
 	}
@@ -202,4 +142,33 @@ public class ActiveLeaves implements Serializable {
 		this.payScale = payScale;
 	}
 
+	public String getAddressDuringLeave() {
+		return addressDuringLeave;
+	}
+
+	public void setAddressDuringLeave(String addressDuringLeave) {
+		this.addressDuringLeave = addressDuringLeave;
+	}
+
+	public Float getHouseRentAllowance() {
+		return houseRentAllowance;
+	}
+
+	public void setHouseRentAllowance(Float houseRentAllowance) {
+		this.houseRentAllowance = houseRentAllowance;
+	}
+
+	public String getLeaveName() {
+		return leaveName;
+	}
+
+	public void setLeaveName(String leaveName) {
+		this.leaveName = leaveName;
+	}
+	
+	
+	
+	
+	
+	
 }
