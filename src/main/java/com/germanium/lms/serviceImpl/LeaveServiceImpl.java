@@ -166,6 +166,22 @@ public class LeaveServiceImpl implements ILeaveService {
 		} else {
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
+		
+		if(savedHistory.getLeaveStatus().equals("REJECTED")) {
+			long diffInMillies = Math.abs(optionalLeave.get().getToDate().getTime() - optionalLeave.get().getFromDate().getTime());
+			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+			LeaveStatsId statsId = new LeaveStatsId();
+			statsId.setEmployeeId(optionalLeave.get().getEmployeeId());
+			statsId.setLeaveId(optionalLeave.get().getLeaveId());
+			Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
+			if (!leaveStats.isPresent()) {
+				throw new Exception("No data found in stats table for user" + optionalLeave.get().getEmployeeId());
+			}
+			leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() + diff);
+			leaveStatsRepo.save(leaveStats.get());
+
+		}
+		
 		return true;
 
 	}
