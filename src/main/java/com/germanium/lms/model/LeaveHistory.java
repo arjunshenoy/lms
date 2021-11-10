@@ -1,21 +1,19 @@
-package com.germanium.lms.models;
+package com.germanium.lms.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author, Teena Joseph
@@ -23,9 +21,7 @@ import lombok.Setter;
 
 @Entity
 @Table (name = "leave_history")
-@Getter
-@Setter
-@Embeddable
+
 @ApiModel(value = "LeaveHistory", description = "Class which holds the Leave History details")
 public class LeaveHistory implements Serializable {
 
@@ -37,10 +33,11 @@ public class LeaveHistory implements Serializable {
 	@EmbeddedId
 	private LeaveHistoryId leaveHistoryId;
 	
-	@Column (name = "leave_id")
-	@ApiModelProperty(value = "leaveId")
+	@Column(name ="leave_id")
+	@NotNull
+	@ApiModelProperty(value ="leaveId")
 	private int leaveId;
-	
+
 	@Column (name = "department_id")
 	@ApiModelProperty(value = "departmentId")
 	private int departmentId;
@@ -73,6 +70,89 @@ public class LeaveHistory implements Serializable {
 	@UpdateTimestamp
 	@ApiModelProperty(value = "updatedTs")
 	private Timestamp updatedTs;
+
+	public LeaveHistoryId getLeaveHistoryId() {
+		return leaveHistoryId;
+	}
+
+	public void setLeaveHistoryId(LeaveHistoryId leaveHistoryId) {
+		this.leaveHistoryId = leaveHistoryId;
+	}
+
+	public int getLeaveId() {
+		return leaveId;
+	}
+
+	public void setLeaveId(int leaveId) {
+		this.leaveId = leaveId;
+	}
+
+	public int getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(int departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public String getLeaveStatus() {
+		return leaveStatus;
+	}
+
+	public void setLeaveStatus(String leaveStatus) {
+		this.leaveStatus = leaveStatus;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public Date getDecisionDate() {
+		return decisionDate;
+	}
+
+	public void setDecisionDate(Date decisionDate) {
+		this.decisionDate = decisionDate;
+	}
+
+	public Timestamp getUpdatedTs() {
+		return updatedTs;
+	}
+
+	public void setUpdatedTs(Timestamp updatedTs) {
+		this.updatedTs = updatedTs;
+	}
+
+	
+	
 	
 	
 }

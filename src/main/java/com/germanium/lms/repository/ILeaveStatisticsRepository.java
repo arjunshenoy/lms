@@ -7,9 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
-import com.germanium.lms.models.LeaveStats;
-import com.germanium.lms.models.LeaveStatsId;
+import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.LeaveStatsId;
 
 public interface ILeaveStatisticsRepository extends JpaRepository<LeaveStats, LeaveStatsId> {
 

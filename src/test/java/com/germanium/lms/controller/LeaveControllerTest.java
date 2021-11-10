@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.germanium.lms.controllers.LeaveController;
-import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.service.ILeaveService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
