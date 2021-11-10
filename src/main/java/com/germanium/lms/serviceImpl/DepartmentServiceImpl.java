@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.germanium.lms.models.Department;
+import com.germanium.lms.model.Department;
 import com.germanium.lms.repository.IDepartmentRepository;
 import com.germanium.lms.service.IDepartmentService;
 

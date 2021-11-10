@@ -2,7 +2,8 @@ package com.germanium.lms.service;
 
 import java.util.List;
 
-import com.germanium.lms.models.Department;
+import com.germanium.lms.model.Department;
+
 
 public interface IDepartmentService {
 
