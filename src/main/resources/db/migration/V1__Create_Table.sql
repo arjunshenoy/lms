@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `Department` (
-    `department_id` int NOT NULL,
+    `department_id` int NOT NULL AUTO_INCREMENT,
     `department_name` varchar(255)  NOT NULL,
     `head_id` varchar(255),
 	PRIMARY KEY (`department_id`)
@@ -70,4 +70,5 @@ VALUES (4,'Half Pay Leave', '2022-03-31',0,2,0.5,'Casual Leave, Sick Leave', 12,
 
 INSERT INTO `leave_rules`
 VALUES (5,'Annual Leave', '2021-12-31',10,2,0,'Sick Leave', 12,'');
+
 

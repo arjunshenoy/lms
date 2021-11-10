@@ -11,13 +11,10 @@ import javax.persistence.Table;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+
 
 @Entity
 @Table(name = "Department")
-@Getter
-@Setter
 @ApiModel(value = "Department", description = "Class that holds the Department details")
 public class Department {
 	
@@ -30,6 +27,30 @@ public class Department {
 	@Column(name = "department_name")
 	@ApiModelProperty(value = "departmentName")
 	private String departmentName;
+
+	public Integer getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Integer departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public String getHeadId() {
+		return headId;
+	}
+
+	public void setHeadId(String headId) {
+		this.headId = headId;
+	}
 
 	@Column(name = "head_id")
 	@ApiModelProperty(value = "headId")
