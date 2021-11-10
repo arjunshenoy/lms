@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.germanium.lms.models.LeaveRules;
-import com.germanium.lms.models.LeaveStats;
+import com.germanium.lms.model.ActiveLeaves;
+import com.germanium.lms.model.LeaveRules;
+import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.service.ILeaveService;
 
 @RestController
@@ -60,23 +62,50 @@ public class LeaveController {
 	}
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
-	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId")Integer leaveId) throws Exception
-	{
+	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws Exception {
 		logger.info("Delete request received for leave ID : {}", leaveId);
-		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION).body(leaveService.deleteLeaveRules(leaveId));
+		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
+				.body(leaveService.deleteLeaveRules(leaveId));
 	}
-	
 
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
-		logger.info("Fetching Leave Stats details for employee Id: " +employeeId);
-		List<LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
+		logger.info("Fetching Leave Stats details for employee Id: " + employeeId);
+		List<com.germanium.lms.model.LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
 		System.out.println(lstats.get(0).getLeaveCount());
 		return ResponseEntity.ok().body(lstats);
 	}
-	@PostMapping("addLeaveStats/{userId}")
+
+	@PostMapping("leaveStats/{userId}")
 	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
 		leaveService.addLeaveStatsForNewUsers(userId);
 
 	}
+
+	@PostMapping("request")
+	public void createLeaveRequest(@Valid @RequestBody ActiveLeaves leaveRequest) {
+		try {
+			leaveService.createLeaveRequest(leaveRequest);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@GetMapping("request/{leaveId}")
+	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
+
+		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
+	}
+
+	@PostMapping("request/{leaveId}/{decision}")
+	public ResponseEntity<?> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
+			@PathVariable String decision) {
+		try {
+			return ResponseEntity.ok().body(leaveService.takeLeaveDecision(leaveId, decision));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(false);
+		}
+
+	}
+
 }

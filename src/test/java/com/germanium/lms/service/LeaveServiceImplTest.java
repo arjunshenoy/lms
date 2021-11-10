@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.germanium.lms.models.LeaveRules;
+import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `Department` (
 
 
 CREATE TABLE IF NOT EXISTS `leave_history` (
+	`leave_request_id` INT NOT NULL,
     `employee_id` INT NOT NULL,
     `date_of_application` DATE NOT NULL,
     `leave_id` INT NOT NULL,
@@ -18,10 +19,11 @@ CREATE TABLE IF NOT EXISTS `leave_history` (
     `comments` VARCHAR(20) NOT NULL,
     `decision_date` DATE NOT NULL,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`,`date_of_application`)
+    PRIMARY KEY(`leave_request_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `active_leaves` (
+	`leave_request_id` INT NOT NULL AUTO_INCREMENT,
     `employee_id` INT NOT NULL,
     `date_of_application` DATE NOT NULL,
     `leave_id` INT NOT NULL,
@@ -31,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `active_leaves` (
     `reason` VARCHAR(20) NOT NULL,
     `comments` VARCHAR(20) NOT NULL,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`,`date_of_application`)
+    PRIMARY KEY(`leave_request_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `leave_rules` (
@@ -69,9 +71,3 @@ VALUES (4,'Half Pay Leave', '2022-03-31',0,2,0.5,'Casual Leave, Sick Leave', 12,
 INSERT INTO `leave_rules`
 VALUES (5,'Annual Leave', '2021-12-31',10,2,0,'Sick Leave', 12,'');
 
-
-INSERT INTO `leave_stats`
-VALUES (1,1,2);
-
-INSERT INTO `leave_stats`
-VALUES (1,2,2);

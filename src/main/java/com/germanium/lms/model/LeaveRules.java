@@ -1,4 +1,4 @@
-package com.germanium.lms.models;
+package com.germanium.lms.model;
 
 import java.util.Date;
 
