@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.dto.LeaveRequestDto;
+import com.germanium.lms.model.factory.Leave;
+import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
 
 @RestController
@@ -83,9 +86,10 @@ public class LeaveController {
 	}
 
 	@PostMapping("request")
-	public void createLeaveRequest(@Valid @RequestBody ActiveLeaves leaveRequest) {
+	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) {
 		try {
-			leaveService.createLeaveRequest(leaveRequest);
+			Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
+			leaveService.createLeaveRequest(leaveObject);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
