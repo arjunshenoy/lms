@@ -34,4 +34,10 @@ public class CasualLeave extends Leave {
 		return null;
 	}
 
+	@Override
+	public String getComment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

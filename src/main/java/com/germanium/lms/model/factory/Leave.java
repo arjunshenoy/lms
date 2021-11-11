@@ -40,6 +40,8 @@ public abstract class Leave {
 	public abstract Float getPay();
 
 	public abstract Float getPayScale();
+	
+	public abstract String getComment();
 
 	public int getEmployeeId() {
 		return employeeId;

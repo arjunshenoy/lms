@@ -27,6 +27,7 @@ public class LeaveHelper {
 
 		leaveHistory.setReason(activeLeave.getReason());
 		leaveHistory.setToDate(activeLeave.getToDate());
+		leaveHistory.setComments(activeLeave.getComments());
 		return leaveHistory;
 
 	}

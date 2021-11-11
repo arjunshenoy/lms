@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
@@ -17,6 +19,7 @@ import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
+import com.germanium.lms.model.dto.MailRequestDto;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -30,6 +33,11 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	Logger logger = LoggerFactory.getLogger(LeaveServiceImpl.class);
 
+	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
+
+	@Value("${user.service.url}")
+	private String userService;
+
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
 
@@ -41,6 +49,9 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveHistoryRepository leaveHistoryRepo;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -128,6 +139,18 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() - diff);
 		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
 		leaveStatsRepo.save(leaveStats.get());
+
+		MailRequestDto mailRequest = new MailRequestDto();
+		mailRequest.setContent(
+				"Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully \n"
+						+ "Leave Details: \n" + "Leave type: " + leaveRequest.getLeaveId() + "\n Leave Start Date: "
+						+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate());
+		mailRequest.setSubject(
+				"Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully");
+		mailRequest.setUserId(leaveRequest.getEmployeeId());
+
+		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
+				MailRequestDto.class);
 
 		return savedLeave;
 	}

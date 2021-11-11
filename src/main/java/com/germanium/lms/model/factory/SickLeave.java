@@ -7,6 +7,8 @@ import com.germanium.lms.model.dto.LeaveRequestDto;
 public class SickLeave extends Leave {
 
 	private Blob document;
+	
+	private String comment;
 
 	public SickLeave(LeaveRequestDto active) {
 		super(active);
@@ -37,5 +39,15 @@ public class SickLeave extends Leave {
 	public Float getPayScale() {
 		return null;
 	}
+
+	@Override
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	
 
 }

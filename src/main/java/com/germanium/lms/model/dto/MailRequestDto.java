@@ -5,22 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MailRequestDto {
 
 	@JsonProperty("to_address")
-	public String toAddress;
-	
+	public String[] toAddress;
+
 	@JsonProperty("subject")
 	public String subject;
-	
+
 	@JsonProperty("content")
 	public String content;
-	
+
 	@JsonProperty("userId")
 	public Integer userId;
 
-	public String getToAddress() {
+	public String[] getToAddress() {
 		return toAddress;
 	}
 
-	public void setToAddress(String toAddress) {
+	public void setToAddress(String[] toAddress) {
 		this.toAddress = toAddress;
 	}
 
@@ -47,7 +47,5 @@ public class MailRequestDto {
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-	
-	
-	
+
 }

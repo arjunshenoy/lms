@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS `leave_history` (
     `from_date` DATE NOT NULL,
     `to_date` DATE NOT NULL,
     `leave_status` VARCHAR(20) NOT NULL,
-    `reason` VARCHAR(20) NOT NULL,
-    `comments` VARCHAR(20) NOT NULL,
+    `reason` VARCHAR(20),
+    `comments` VARCHAR(20),
     `decision_date` DATE NOT NULL,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(`leave_request_id`)
@@ -68,7 +68,6 @@ VALUES (3,'Sick Leave', '2021-12-31',0,2,0,'NA', 12,'');
 INSERT INTO `leave_rules`
 VALUES (4,'Half Pay Leave', '2022-03-31',0,2,0.5,'Casual Leave, Sick Leave', 12,'');
 
-INSERT INTO `leave_rules`
-VALUES (5,'Annual Leave', '2021-12-31',10,2,0,'Sick Leave', 12,'');
 
-
+INSERT INTO leave_stats VALUES(1,1,5);
+INSERT INTO leave_stats VALUES (1,2,10);
