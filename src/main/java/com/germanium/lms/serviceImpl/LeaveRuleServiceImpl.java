@@ -6,8 +6,9 @@ import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
+import com.germanium.lms.service.ILeaveRuleService;
 
-public class LeaveRuleServiceImpl {
+public class LeaveRuleServiceImpl implements ILeaveRuleService{
 	@Autowired
 	ILeaveRulesRepository leaveRulesRepo;
 
