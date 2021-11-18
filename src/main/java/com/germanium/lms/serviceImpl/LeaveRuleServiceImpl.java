@@ -3,6 +3,7 @@ package com.germanium.lms.serviceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.repository.ILeaveRulesRepository;
@@ -17,10 +18,10 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService{
 	@Autowired
 	ILeaveStatisticsRepository leaveStatsRepo;
 
-	public boolean checkLeaveTypeRequestedForUserId(int leaveId, Integer userId) throws Exception {
+	public boolean checkLeaveTypeRequestedForUserId(int leaveId, Integer userId){
 		LeaveRules leaveDetails = leaveRulesRepo.findById(leaveId).get();
 		if (leaveDetails == null) {
-			throw new Exception("Leave with leave Id :" + leaveId + " not found");
+			throw new ResourceNotFoundException("Leave with leave Id :" + leaveId + " not found");
 		}
 		LeaveStats leaveStats = leaveStatsRepo.findLeaveTypeByUserIdAndLeaveId(leaveDetails.getLeaveId(), userId);
 		if (leaveStats == null) {
