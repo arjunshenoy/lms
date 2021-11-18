@@ -8,4 +8,6 @@ import com.germanium.lms.model.LeaveRules;
 @Repository
 public interface ILeaveRulesRepository extends CrudRepository<LeaveRules, Integer> {
 
+	LeaveRules findByName(String leaveType);
+
 }

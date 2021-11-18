@@ -25,6 +25,7 @@ import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
+import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
 import com.germanium.lms.utils.LeaveHelper;
 
@@ -52,6 +53,9 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired 
+	ILeaveRuleService leaveRuleService;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -126,6 +130,11 @@ public class LeaveServiceImpl implements ILeaveService {
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
+		Boolean result = leaveRuleService.checkLeaveTypeRequestedForUserId(leaveRequest.getLeaveId(),leaveRequest.getEmployeeId());
+		if (result==false) {
+			logger.info("User does not have the leave type requested");
+			throw new ResourceNotFoundException("User does not have the leave type requested");
+		}
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
 			throw new Exception("No data found in stats table for user" + leaveRequest.getEmployeeId());
