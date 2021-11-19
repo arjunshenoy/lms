@@ -36,7 +36,7 @@ public class LeaveRules {
 	
 	@Column(name = "lapse_date")
 	@ApiModelProperty(name = "lapseDate")
-	private Date lapseDate;
+	private String lapseDate;
 	
 	@Column(name = "carry_over_count")
 	@ApiModelProperty(name = "carryOverCount")
@@ -85,12 +85,12 @@ public class LeaveRules {
 	}
 
 
-	public Date getLapseDate() {
+	public String getLapseDate() {
 		return lapseDate;
 	}
 
 
-	public void setLapseDate(Date lapseDate) {
+	public void setLapseDate(String lapseDate) {
 		this.lapseDate = lapseDate;
 	}
 

@@ -1,5 +1,8 @@
 package com.germanium.lms.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +12,6 @@ import com.germanium.lms.model.LeaveRules;
 public interface ILeaveRulesRepository extends CrudRepository<LeaveRules, Integer> {
 
 	LeaveRules findByName(String leaveType);
-
+	
+	Optional<List<LeaveRules>> findByLapseDate(String currentDate);
 }
