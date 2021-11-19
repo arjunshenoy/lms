@@ -18,6 +18,8 @@ public interface ILeaveStatisticsRepository extends JpaRepository<LeaveStats, Le
 	
 	@Query("SELECT leaveStat FROM LeaveStats leaveStat WHERE leaveStat.id.employeeId = :userId and leaveStat.id.leaveId = :leaveId")
 	LeaveStats findLeaveTypeByUserIdAndLeaveId(int leaveId, Integer userId);
+
+	List<LeaveStats> findByIdLeaveId(int leaveId);
 		
 	}
 
