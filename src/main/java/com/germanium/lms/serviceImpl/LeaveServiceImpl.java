@@ -130,7 +130,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
 		Boolean result = leaveRuleService.checkLeaveTypeRequestedForUserId(leaveRequest.getLeaveId(),leaveRequest.getEmployeeId());
-		if (!result) {
+		if (Boolean.TRUE.equals(result)) {
 			logger.info("User does not have the leave type requested");
 			throw new ResourceNotFoundException("User does not have the leave type requested");
 		}

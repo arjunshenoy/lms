@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
@@ -43,7 +44,7 @@ public class LeaveController {
 	}
 
 	@GetMapping("leaveType/{leaveId}")
-	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) throws Exception {
+	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) throws ResourceNotFoundException {
 		return ResponseEntity.ok().body(leaveService.findLeavesById(leaveId));
 
 	}
@@ -56,7 +57,7 @@ public class LeaveController {
 
 	@PutMapping("leaveType/{leaveId}")
 	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
-			@Valid @RequestBody LeaveRules leaveRule) throws Exception {
+			@Valid @RequestBody LeaveRules leaveRule) throws ResourceNotFoundException {
 
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
@@ -64,7 +65,7 @@ public class LeaveController {
 	}
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
-	public ResponseEntity<? extends Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws Exception {
+	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws ResourceNotFoundException {
 		logger.info("Delete request received for leave ID : {}", leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
@@ -100,7 +101,7 @@ public class LeaveController {
 	}
 
 	@PostMapping("request/{leaveId}/{decision}")
-	public ResponseEntity<? extends Boolean> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
+	public ResponseEntity<?> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
 			@PathVariable String decision) {
 		try {
 			return ResponseEntity.ok().body(leaveService.takeLeaveDecision(leaveId, decision));

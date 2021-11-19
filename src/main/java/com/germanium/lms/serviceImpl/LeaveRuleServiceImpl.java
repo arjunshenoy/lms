@@ -31,7 +31,7 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 			throw new ResourceNotFoundException("Leave with leave Id :" + leaveId + " not found");
 		}
 		LeaveStats leaveStats = leaveStatsRepo.findLeaveTypeByUserIdAndLeaveId(leaveDetails.getLeaveId(), userId);
-		return !(leaveStats == null);
+		return leaveStats != null;
 	}
 
 
