@@ -2,14 +2,11 @@ package com.germanium.lms.serviceImpl;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +31,7 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 			throw new ResourceNotFoundException("Leave with leave Id :" + leaveId + " not found");
 		}
 		LeaveStats leaveStats = leaveStatsRepo.findLeaveTypeByUserIdAndLeaveId(leaveDetails.getLeaveId(), userId);
-		if (leaveStats == null) {
-			return false;
-		} else {
-			return true;
-		}
+		return !(leaveStats == null);
 	}
 
 
@@ -50,7 +43,6 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 	public void resetLeaveStats() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
-		System.out.println(dateFormat.format(date));
 		Optional<List<LeaveRules>> lapseLeaves = leaveRulesRepo.findByLapseDate(dateFormat.format(date));
 		lapseLeaves.get().stream().forEach(leave -> {
 			List<LeaveStats> leaveStats = leaveStatsRepo.findByIdLeaveId(leave.getLeaveId());

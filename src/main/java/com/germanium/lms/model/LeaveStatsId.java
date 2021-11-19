@@ -6,8 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
 *

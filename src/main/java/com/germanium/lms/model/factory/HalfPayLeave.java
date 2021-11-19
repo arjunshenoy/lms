@@ -36,22 +36,16 @@ public class HalfPayLeave extends Leave {
 
 	@Override
 	public Blob getDocument() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getReason() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-
 }

@@ -3,8 +3,6 @@ package com.germanium.lms.model.factory;
 import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.Date;
-
-import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.dto.LeaveRequestDto;
 
 public abstract class Leave {
@@ -23,7 +21,7 @@ public abstract class Leave {
 
 	private Timestamp updatedTs;
 
-	public Leave(LeaveRequestDto active) {
+	protected Leave(LeaveRequestDto active) {
 		this.employeeId = active.getEmployeeId();
 		this.dateOfApplication = active.getDateOfApplication();
 		this.leaveId = active.getLeaveId();

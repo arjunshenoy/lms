@@ -15,7 +15,6 @@ public class AnnualLeave extends Leave {
 
 	@Override
 	public Blob getDocument() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -30,19 +29,16 @@ public class AnnualLeave extends Leave {
 
 	@Override
 	public Float getPay() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Float getPayScale() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
