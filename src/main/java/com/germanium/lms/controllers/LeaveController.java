@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.germanium.lms.model.ActiveLeaves;
@@ -65,7 +64,7 @@ public class LeaveController {
 	}
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
-	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws Exception {
+	public ResponseEntity<? extends Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws Exception {
 		logger.info("Delete request received for leave ID : {}", leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
@@ -73,9 +72,8 @@ public class LeaveController {
 
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
-		logger.info("Fetching Leave Stats details for employee Id: " + employeeId);
+		logger.info("Fetching Leave Stats details for employee Id: {}", employeeId);
 		List<com.germanium.lms.model.LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
-		System.out.println(lstats.get(0).getLeaveCount());
 		return ResponseEntity.ok().body(lstats);
 	}
 
@@ -102,7 +100,7 @@ public class LeaveController {
 	}
 
 	@PostMapping("request/{leaveId}/{decision}")
-	public ResponseEntity<?> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
+	public ResponseEntity<? extends Boolean> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
 			@PathVariable String decision) {
 		try {
 			return ResponseEntity.ok().body(leaveService.takeLeaveDecision(leaveId, decision));
