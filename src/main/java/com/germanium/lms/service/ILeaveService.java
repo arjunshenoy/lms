@@ -29,4 +29,6 @@ public interface ILeaveService {
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
 	
 	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws Exception;
+	
+	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
 }
