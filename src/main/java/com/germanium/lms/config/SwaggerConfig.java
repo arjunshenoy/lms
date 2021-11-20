@@ -38,14 +38,14 @@ public class SwaggerConfig {
 	public SwaggerResourcesProvider swaggerResourcesProvider() {
 		return () -> {
 			List<SwaggerResource> resources = new ArrayList<>();
-			resources.add(createResource("lms-leave-service", "lms-leave-service", "1"));
+			resources.add(createResource("lms-leave-service", "1"));
 			return resources;
 		};
 	}
 
 	// control where swagger will look for content
 
-	private SwaggerResource createResource(String name, String location, String version) {
+	private SwaggerResource createResource(String name, String version) {
 		SwaggerResource swaggerResource = new SwaggerResource();
 		swaggerResource.setName(name);
 		swaggerResource.setUrl("/api/swagger.json");

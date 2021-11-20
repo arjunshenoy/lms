@@ -20,4 +20,8 @@ public class LeaveFactory {
 
 		return null;
 	}
+	
+	private LeaveFactory() {
+		throw new IllegalStateException("Factory class");
+	}
 }

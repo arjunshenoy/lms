@@ -63,10 +63,10 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public LeaveRules findLeavesById(Integer leaveId) throws Exception {
+	public LeaveRules findLeavesById(Integer leaveId) throws ResourceNotFoundException {
 		Optional<LeaveRules> optionalLeave = leaveRulesRepo.findById(leaveId);
 		if (!optionalLeave.isPresent()) {
-			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
+			throw new ResourceNotFoundException("Leave With Leave Id: Not Found " + leaveId);
 		}
 		return optionalLeave.get();
 	}
@@ -78,20 +78,20 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws Exception {
+	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws ResourceNotFoundException {
 
 		if (!leaveRulesRepo.existsById(leaveId)) {
-			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
+			throw new ResourceNotFoundException("Leave With Leave Id: Not Found " + leaveId);
 		}
 		logger.info("Updating Leave Details");
 		return leaveRulesRepo.save(leaveRule);
 	}
 
 	@Override
-	public boolean deleteLeaveRules(Integer leaveId) throws Exception {
+	public boolean deleteLeaveRules(Integer leaveId) throws ResourceNotFoundException {
 		logger.info("Deleting Leave Details");
 		if (!leaveRulesRepo.existsById(leaveId)) {
-			throw new Exception("Leave With Leave Id: Not Found " + leaveId);
+			throw new ResourceNotFoundException("Leave With Leave Id: Not Found " + leaveId);
 		}
 		leaveRulesRepo.deleteById(leaveId);
 		logger.info("Successfully deleted leave with ID: {}", leaveId);
@@ -101,16 +101,15 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Override
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId) {
 		logger.info("Retrieving Leave stats Details");
-		List<LeaveStats> leaveStats = leaveStatsRepo.findByEmployeeId(employeeId);
-		return leaveStats;
+		return leaveStatsRepo.findByEmployeeId(employeeId);
 	}
 
 	@Override
 	public void addLeaveStatsForNewUsers(Integer userId) {
-		logger.info("Creating Leave Statistics for User Id:" + userId);
+		logger.info("Creating Leave Statistics for User Id: {}", userId);
 
 		List<LeaveRules> leaveRules = (List<LeaveRules>) leaveRulesRepo.findAll();
-		List<LeaveStats> leaveStatsList = new ArrayList<LeaveStats>();
+		List<LeaveStats> leaveStatsList = new ArrayList<>();
 		leaveRules.stream().forEach(leave -> {
 			LeaveStatsId id = new LeaveStatsId();
 			id.setEmployeeId(userId);
@@ -121,7 +120,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			leaveStatsList.add(ls);
 		});
 		leaveStatsRepo.saveAll(leaveStatsList);
-		logger.info("Rule statistics creation done successfully" + userId);
+		logger.info("Rule statistics creation done successfully {}", userId);
 
 	}
 
@@ -131,13 +130,13 @@ public class LeaveServiceImpl implements ILeaveService {
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
 		Boolean result = leaveRuleService.checkLeaveTypeRequestedForUserId(leaveRequest.getLeaveId(),leaveRequest.getEmployeeId());
-		if (result==false) {
+		if (Boolean.TRUE.equals(result)) {
 			logger.info("User does not have the leave type requested");
 			throw new ResourceNotFoundException("User does not have the leave type requested");
 		}
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
-			throw new Exception("No data found in stats table for user" + leaveRequest.getEmployeeId());
+			throw new ResourceNotFoundException("No data found in stats table for user" + leaveRequest.getEmployeeId());
 		}
 		long diffInMillies = Math.abs(leaveRequest.getToDate().getTime() - leaveRequest.getFromDate().getTime());
 		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -192,7 +191,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		LeaveHistory savedHistory = leaveHistoryRepo.save(leaveHistory);
 
 		if (optionalLeave.get().getLeaveRequestId() != savedHistory.getLeaveHistoryId().getLeaveRequestId()) {
-			logger.error("Failed to add leave to hsitory table" + leaveRequestId);
+			logger.error("Failed to add leave to hsitory table {}", leaveRequestId);
 			throw new Exception("Failed to add leave to history table" + leaveRequestId);
 		} else {
 			activeLeaveRepo.deleteById(leaveRequestId);
@@ -207,7 +206,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			statsId.setLeaveId(optionalLeave.get().getLeaveId());
 			Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 			if (!leaveStats.isPresent()) {
-				throw new Exception("No data found in stats table for user" + optionalLeave.get().getEmployeeId());
+				throw new ResourceNotFoundException("No data found in stats table for user" + optionalLeave.get().getEmployeeId());
 			}
 			leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() + diff);
 			leaveStatsRepo.save(leaveStats.get());
