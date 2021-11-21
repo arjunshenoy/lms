@@ -151,6 +151,17 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
 	}
+	
+	public String autoApproval(Leave leaveRequest) throws Exception {
+		int depId = leaveRequest.getDepartmentId();
+		float wh = 10*depId;
+		float we = 30;
+		int lq = 3;
+		
+		Date from = leaveRequest.getFromDate();
+		
+		return "queue";
+	}
 
 	@Override
 	@Transactional
