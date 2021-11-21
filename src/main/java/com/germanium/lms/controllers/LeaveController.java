@@ -110,5 +110,17 @@ public class LeaveController {
 		}
 
 	}
+	
+	@PostMapping("cancelRequest/{leaveRequestId}/{cancelDecision}")
+	public ResponseEntity<Boolean> cancelWithdrawLeave(@PathVariable("leaveRequestId") Integer leaveRequestId,
+			@PathVariable("cancelDecision")  String cancelDecision) {
+		logger.info("Request received for {} leave",cancelDecision);
+		try {
+			return ResponseEntity.ok().body(leaveService.cancelWithdrawLeave(leaveRequestId, cancelDecision));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(false);
+		}
+
+	}
 
 }
