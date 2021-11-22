@@ -39,7 +39,7 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 	 * This method is used to reset the leave stats table. We are using a cron job
 	 * that is executed 12 am everyday. Spring internally uses quartz scheduler
 	 */
-	@Scheduled(cron = "0 0 * * *")
+	@Scheduled(cron = "0 0 * * * *")
 	public void resetLeaveStats() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
