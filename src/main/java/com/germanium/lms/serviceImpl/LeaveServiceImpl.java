@@ -130,7 +130,8 @@ public class LeaveServiceImpl implements ILeaveService {
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
-		Boolean result = leaveRuleService.checkLeaveTypeRequestedForUserId(leaveRequest.getLeaveId(),leaveRequest.getEmployeeId());
+		Boolean result = leaveRuleService.checkLeaveTypeRequestedForUserId(leaveRequest.getLeaveId(),
+				leaveRequest.getEmployeeId());
 		if (Boolean.FALSE.equals(result)) {
 			logger.info("User does not have the leave type requested");
 			throw new ResourceNotFoundException("User does not have the leave type requested");
@@ -209,15 +210,21 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	public Boolean cancelWithdrawLeave(Integer leaveRequestId, String cancelDecision) {
-		
-		
+
 		if (cancelDecision.equalsIgnoreCase("Cancel")) {
 			Optional<LeaveHistory> optionalLeaveHistory = leaveHistoryRepo
 					.findByLeaveHistoryIdLeaveRequestId(leaveRequestId);
 			if (!optionalLeaveHistory.isPresent()) {
 				logger.error("No data found in Leave History table for Leave Request Id {}", leaveRequestId);
-				throw new ResourceNotFoundException("No data found in Leave History table for Leave Request Id" + leaveRequestId);
+				throw new ResourceNotFoundException(
+						"No data found in Leave History table for Leave Request Id" + leaveRequestId);
 			}
+
+			if (checkForPendingLeaveApproval(optionalLeaveHistory.get().getFromDate(),
+					optionalLeaveHistory.get().getToDate(), optionalLeaveHistory.get().getDepartmentId())) {
+				logger.info("Approved one pending leave");
+			}
+
 			optionalLeaveHistory.get().setLeaveStatus("CANCELLED");
 			leaveHistoryRepo.save(optionalLeaveHistory.get());
 			incrementLeaveCount(optionalLeaveHistory.get().getFromDate(), optionalLeaveHistory.get().getToDate(),
@@ -229,8 +236,14 @@ public class LeaveServiceImpl implements ILeaveService {
 			Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveRequestId);
 			if (!optionalLeave.isPresent()) {
 				logger.error("No data found in Active Leave table for Leave Request Id {}", leaveRequestId);
-				throw new ResourceNotFoundException("No data found in Active Leave table for Leave Request Id" + leaveRequestId);
+				throw new ResourceNotFoundException(
+						"No data found in Active Leave table for Leave Request Id" + leaveRequestId);
 			}
+			if (checkForPendingLeaveApproval(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
+					optionalLeave.get().getDepartmentId())) {
+				logger.info("Approved one pending leave");
+			}
+
 			LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
 			activeLeaveRepo.deleteById(leaveRequestId);
 			leaveHistory.setLeaveStatus("CANCELLED");
@@ -238,6 +251,22 @@ public class LeaveServiceImpl implements ILeaveService {
 			incrementLeaveCount(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
 					optionalLeave.get().getEmployeeId(), optionalLeave.get().getLeaveId());
 		}
+		return true;
+	}
+
+	private boolean checkForPendingLeaveApproval(Date fromDate, Date toDate, int departmentId) {
+		List<ActiveLeaves> pendingLeaves = activeLeaveRepo.findByFromDateAndToDateAndDepartmentId(fromDate, toDate,
+				departmentId);
+		if (pendingLeaves.isEmpty()) {
+			logger.info("No pending leaves to approve");
+			return false;
+		}
+		ActiveLeaves selectedLeave = pendingLeaves.get(0);
+		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(selectedLeave);
+		leaveHistory.setLeaveStatus("APPROVED");
+		leaveHistoryRepo.save(leaveHistory);
+		activeLeaveRepo.deleteById(selectedLeave.getLeaveRequestId());
+		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
 		return true;
 	}
 
@@ -249,7 +278,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		statsId.setLeaveId(leaveId);
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
-			logger.error("No datafound in stats table for userId {}",employeeId);
+			logger.error("No datafound in stats table for userId {}", employeeId);
 			throw new ResourceNotFoundException("No data found in stats table for user" + employeeId);
 		}
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() + diff);
