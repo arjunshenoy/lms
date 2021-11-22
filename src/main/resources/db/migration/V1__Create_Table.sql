@@ -1,11 +1,3 @@
-CREATE TABLE IF NOT EXISTS `Department` (
-    `department_id` int NOT NULL AUTO_INCREMENT,
-    `department_name` varchar(255)  NOT NULL,
-    `head_id` varchar(255),
-	PRIMARY KEY (`department_id`)
-);
-
-
 CREATE TABLE IF NOT EXISTS `leave_history` (
 	`leave_request_id` INT NOT NULL,
     `employee_id` INT NOT NULL,

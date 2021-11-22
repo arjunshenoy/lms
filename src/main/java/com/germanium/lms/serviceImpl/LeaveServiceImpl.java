@@ -31,6 +31,7 @@ import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
 import com.germanium.lms.service.iterator.Iterator;
+import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
 
 @Service
@@ -153,14 +154,12 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 	
 	public String autoApproval(Leave leaveRequest) throws Exception {
-		int depId = leaveRequest.getDepartmentId();
-		float wh = 10*depId;
-		float we = 30;
-		int lq = 3;
-		
-		Date from = leaveRequest.getFromDate();
-		
-		return "queue";
+		// decorate/chain with each rule
+		IAutoApprove autoApproval = new AutoApproveByEmployeeNumber(
+									new AutoApproveByHours(
+									new AutoApproveQueue()		
+									,leaveHistoryRepo),leaveHistoryRepo);		
+		return autoApproval.checkApprovalRule(leaveRequest, "approve");
 	}
 
 	@Override
@@ -181,10 +180,10 @@ public class LeaveServiceImpl implements ILeaveService {
 					"No data found in stats table for user " + leaveRequest.getEmployeeId());
 		}
 		long diffInMillies = Math.abs(leaveRequest.getToDate().getTime() - leaveRequest.getFromDate().getTime());
-		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) + 1;
 		if (leaveStats.get().getLeaveCount() - diff < 0) {
-			logger.info("User Dosent Have enough Leaves");
-			throw new Exception("User Dosent Have enough Leaves");
+			logger.info("User does not have enough Leaves");
+			throw new Exception("User does not have enough Leaves");
 		}
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() - diff);
 		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
@@ -336,7 +335,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public boolean incrementLeaveCount(Date fromDate, Date toDate, int employeeId, int leaveId) {
 		long diffInMillies = Math.abs(toDate.getTime() - fromDate.getTime());
-		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) + 1;
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(employeeId);
 		statsId.setLeaveId(leaveId);
