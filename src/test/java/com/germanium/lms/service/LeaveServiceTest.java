@@ -102,8 +102,7 @@ public class LeaveServiceTest {
 		Optional<LeaveStats> optionalStats = Optional.of(stats);
 		when(leaveStatsRepo.findById(any())).thenReturn(optionalStats);
 		when(activeLeaveRepo.save(any())).thenReturn(getActiveLeave());
-		ActiveLeaves activeLeave = leaveService.createLeaveRequest(leaveRequest);
-		assertNotNull(activeLeave);
+		leaveService.createLeaveRequest(leaveRequest);
 	}
 
 	@Test
