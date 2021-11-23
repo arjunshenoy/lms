@@ -194,7 +194,9 @@ public class LeaveServiceImpl implements ILeaveService {
 				+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate();
 		String subject = "Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully";
 		sendMail(content, subject, leaveRequest.getEmployeeId());
-		return savedLeave;
+		String autoApproval = autoApproval(leaveRequest);
+		if (!autoApproval.equals("queue")) // if queued leave it in active leaves
+			takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 	}
 
 	private void sendMail(String content, String subject, int employeeId) {
