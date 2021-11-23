@@ -138,7 +138,8 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
-			throw new ResourceNotFoundException("No data found in stats table for user " + leaveRequest.getEmployeeId());
+			throw new ResourceNotFoundException(
+					"No data found in stats table for user " + leaveRequest.getEmployeeId());
 		}
 		long diffInMillies = Math.abs(leaveRequest.getToDate().getTime() - leaveRequest.getFromDate().getTime());
 		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -154,17 +155,17 @@ public class LeaveServiceImpl implements ILeaveService {
 				+ "Leave Details: \n" + "Leave type: " + leaveRequest.getLeaveId() + "\n Leave Start Date: "
 				+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate();
 		String subject = "Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully";
-		sendMailequest(content, subject, leaveRequest.getEmployeeId());
+		sendMail(content, subject, leaveRequest.getEmployeeId());
 		return savedLeave;
 	}
 
-	private void sendMailequest(String content, String subject, int employeeId) {
+	private void sendMail(String content, String subject, int employeeId) {
 		MailRequestDto mailRequest = new MailRequestDto();
 		mailRequest.setContent(content);
 		mailRequest.setSubject(subject);
 		mailRequest.setUserId(employeeId);
 		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
-				MailRequestDto.class);		
+				MailRequestDto.class);
 	}
 
 	@Override
@@ -233,6 +234,14 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId(),
 					optionalLeaveHistory.get().getLeaveId());
 
+			String content = "Leave Application cancelled successfully for User Id : "
+					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + "Leave Details: \n"
+					+ "Leave type: " + optionalLeaveHistory.get().getLeaveId() + "\n Leave Start Date: "
+					+ optionalLeaveHistory.get().getFromDate() + "\n Leave End Date: "
+					+ optionalLeaveHistory.get().getToDate();
+			String subject = "Leave Application Cancelled for User Id : "
+					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
+			sendMail(content, subject, optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId());
 		}
 		if (cancelDecision.equalsIgnoreCase("Withdraw")) {
 			Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveRequestId);
@@ -252,6 +261,14 @@ public class LeaveServiceImpl implements ILeaveService {
 			leaveHistoryRepo.save(leaveHistory);
 			incrementLeaveCount(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
 					optionalLeave.get().getEmployeeId(), optionalLeave.get().getLeaveId());
+
+			String content = "Leave Application withdrawn successfully for User Id : "
+					+ optionalLeave.get().getEmployeeId() + "Leave Details: \n" + "Leave type: "
+					+ optionalLeave.get().getLeaveId() + "\n Leave Start Date: " + optionalLeave.get().getFromDate()
+					+ "\n Leave End Date: " + optionalLeave.get().getToDate();
+			String subject = "Leave Application Cancelled for User Id : " + optionalLeave.get().getEmployeeId();
+			sendMail(content, subject, optionalLeave.get().getEmployeeId());
+
 		}
 		return true;
 	}
@@ -269,6 +286,12 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveHistoryRepo.save(leaveHistory);
 		activeLeaveRepo.deleteById(selectedLeave.getLeaveRequestId());
 		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
+		String content = "Leave Application approved successfully for User Id : "
+				+ selectedLeave.getEmployeeId() + "Leave Details: \n" + "Leave type: "
+				+ selectedLeave.getLeaveId() + "\n Leave Start Date: " + selectedLeave.getFromDate()
+				+ "\n Leave End Date: " + selectedLeave.getToDate();
+		String subject = "Leave Application Cancelled for User Id : " + selectedLeave.getEmployeeId();
+		sendMail(content, subject, selectedLeave.getEmployeeId());
 		return true;
 	}
 
