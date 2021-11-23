@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `Department` (
-    `department_id` int NOT NULL,
+    `department_id` int NOT NULL AUTO_INCREMENT,
     `department_name` varchar(255)  NOT NULL,
     `head_id` varchar(255),
 	PRIMARY KEY (`department_id`)
@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `Department` (
 
 
 CREATE TABLE IF NOT EXISTS `leave_history` (
+	`leave_request_id` INT NOT NULL,
     `employee_id` INT NOT NULL,
     `date_of_application` DATE NOT NULL,
     `leave_id` INT NOT NULL,
@@ -14,24 +15,25 @@ CREATE TABLE IF NOT EXISTS `leave_history` (
     `from_date` DATE NOT NULL,
     `to_date` DATE NOT NULL,
     `leave_status` VARCHAR(20) NOT NULL,
-    `reason` VARCHAR(20) NOT NULL,
-    `comments` VARCHAR(20) NOT NULL,
+    `reason` VARCHAR(20),
+    `comments` VARCHAR(20),
     `decision_date` DATE NOT NULL,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`,`date_of_application`)
+    PRIMARY KEY(`leave_request_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `active_leaves` (
+	`leave_request_id` INT NOT NULL AUTO_INCREMENT,
     `employee_id` INT NOT NULL,
     `date_of_application` DATE NOT NULL,
     `leave_id` INT NOT NULL,
     `department_id` INT NOT NULL,
     `from_date` DATE NOT NULL,
     `to_date` DATE NOT NULL,
-    `reason` VARCHAR(20) NOT NULL,
-    `comments` VARCHAR(20) NOT NULL,
+    `reason` VARCHAR(20) ,
+    `comments` VARCHAR(20) ,
     `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`employee_id`,`date_of_application`)
+    PRIMARY KEY(`leave_request_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `leave_rules` (

@@ -26,11 +26,11 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 	ILeaveStatisticsRepository leaveStatsRepo;
 
 	public boolean checkLeaveTypeRequestedForUserId(int leaveId, Integer userId) {
-		LeaveRules leaveDetails = leaveRulesRepo.findById(leaveId).get();
-		if (leaveDetails == null) {
-			throw new ResourceNotFoundException("Leave with leave Id :" + leaveId + " not found");
+		Optional<LeaveRules> leaveDetails = leaveRulesRepo.findById(leaveId);
+		if (leaveDetails.isEmpty()) {
+			throw new ResourceNotFoundException("Leave with leave Id : " + leaveId + " not found");
 		}
-		LeaveStats leaveStats = leaveStatsRepo.findLeaveTypeByUserIdAndLeaveId(leaveDetails.getLeaveId(), userId);
+		LeaveStats leaveStats = leaveStatsRepo.findLeaveTypeByUserIdAndLeaveId(leaveDetails.get().getLeaveId(), userId);
 		return leaveStats != null;
 	}
 
@@ -39,8 +39,8 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 	 * This method is used to reset the leave stats table. We are using a cron job
 	 * that is executed 12 am everyday. Spring internally uses quartz scheduler
 	 */
-	@Scheduled(cron = "0 0 * * *")
-	public void resetLeaveStats() {
+	@Scheduled(cron = "0 0 * * * *")
+	public boolean resetLeaveStats() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		Optional<List<LeaveRules>> lapseLeaves = leaveRulesRepo.findByLapseDate(dateFormat.format(date));
@@ -55,5 +55,6 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 			});
 			leaveStatsRepo.saveAll(leaveStats);
 		});
+		return true;
 	}
 }
