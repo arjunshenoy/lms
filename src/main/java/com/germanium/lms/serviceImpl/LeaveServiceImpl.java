@@ -138,7 +138,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
-			throw new ResourceNotFoundException("No data found in stats table for user" + leaveRequest.getEmployeeId());
+			throw new ResourceNotFoundException("No data found in stats table for user " + leaveRequest.getEmployeeId());
 		}
 		long diffInMillies = Math.abs(leaveRequest.getToDate().getTime() - leaveRequest.getFromDate().getTime());
 		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -150,26 +150,28 @@ public class LeaveServiceImpl implements ILeaveService {
 		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
 		leaveStatsRepo.save(leaveStats.get());
 
-		MailRequestDto mailRequest = new MailRequestDto();
-		mailRequest.setContent(
-				"Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully \n"
-						+ "Leave Details: \n" + "Leave type: " + leaveRequest.getLeaveId() + "\n Leave Start Date: "
-						+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate());
-		mailRequest.setSubject(
-				"Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully");
-		mailRequest.setUserId(leaveRequest.getEmployeeId());
-
-		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
-				MailRequestDto.class);
-
+		String content = "Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully \n"
+				+ "Leave Details: \n" + "Leave type: " + leaveRequest.getLeaveId() + "\n Leave Start Date: "
+				+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate();
+		String subject = "Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully";
+		sendMailequest(content, subject, leaveRequest.getEmployeeId());
 		return savedLeave;
+	}
+
+	private void sendMailequest(String content, String subject, int employeeId) {
+		MailRequestDto mailRequest = new MailRequestDto();
+		mailRequest.setContent(content);
+		mailRequest.setSubject(subject);
+		mailRequest.setUserId(employeeId);
+		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
+				MailRequestDto.class);		
 	}
 
 	@Override
 	public ActiveLeaves getActiveLeavesById(Integer leaveId) {
 		Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveId);
 		if (optionalLeave.isEmpty()) {
-			throw new ResourceNotFoundException("Leave Request with id: not found" + leaveId);
+			throw new ResourceNotFoundException("Leave Request with id: not found " + leaveId);
 		}
 		return optionalLeave.get();
 	}
@@ -179,7 +181,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 		Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveRequestId);
 		if (optionalLeave.isEmpty()) {
-			throw new ResourceNotFoundException("Leave Request with id: not found" + leaveRequestId);
+			throw new ResourceNotFoundException("Leave Request with id: not found " + leaveRequestId);
 		}
 
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
@@ -194,7 +196,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 		if (optionalLeave.get().getLeaveRequestId() != savedHistory.getLeaveHistoryId().getLeaveRequestId()) {
 			logger.error("Failed to add leave to hsitory table {}", leaveRequestId);
-			throw new Exception("Failed to add leave to history table" + leaveRequestId);
+			throw new Exception("Failed to add leave to history table " + leaveRequestId);
 		} else {
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
@@ -217,7 +219,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			if (!optionalLeaveHistory.isPresent()) {
 				logger.error("No data found in Leave History table for Leave Request Id {}", leaveRequestId);
 				throw new ResourceNotFoundException(
-						"No data found in Leave History table for Leave Request Id" + leaveRequestId);
+						"No data found in Leave History table for Leave Request Id " + leaveRequestId);
 			}
 
 			if (checkForPendingLeaveApproval(optionalLeaveHistory.get().getFromDate(),
@@ -237,7 +239,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			if (!optionalLeave.isPresent()) {
 				logger.error("No data found in Active Leave table for Leave Request Id {}", leaveRequestId);
 				throw new ResourceNotFoundException(
-						"No data found in Active Leave table for Leave Request Id" + leaveRequestId);
+						"No data found in Active Leave table for Leave Request Id " + leaveRequestId);
 			}
 			if (checkForPendingLeaveApproval(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
 					optionalLeave.get().getDepartmentId())) {
@@ -279,11 +281,10 @@ public class LeaveServiceImpl implements ILeaveService {
 		Optional<LeaveStats> leaveStats = leaveStatsRepo.findById(statsId);
 		if (!leaveStats.isPresent()) {
 			logger.error("No datafound in stats table for userId {}", employeeId);
-			throw new ResourceNotFoundException("No data found in stats table for user" + employeeId);
+			throw new ResourceNotFoundException("No data found in stats table for user " + employeeId);
 		}
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() + diff);
 		leaveStatsRepo.save(leaveStats.get());
 		return true;
 	}
-
 }

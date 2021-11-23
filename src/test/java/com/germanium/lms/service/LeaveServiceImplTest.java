@@ -7,20 +7,22 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
+import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.LeaveStatsId;
 import com.germanium.lms.repository.ILeaveRulesRepository;
+import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 
 
 @SpringBootTest
-
 @RunWith(SpringJUnit4ClassRunner.class)
 public class LeaveServiceImplTest {
 
@@ -29,9 +31,11 @@ public class LeaveServiceImplTest {
 
 	@Autowired
 	private ILeaveRulesRepository leaveRulesRepository;
+	
+	@Autowired
+	private ILeaveStatisticsRepository leaveStatsRepo;
 
 	@Test
-	@Ignore
 	public void createLeaveRulesTest() { 
 		List<LeaveRules> expectedList = createLeaveRulesList();
 
@@ -57,7 +61,6 @@ public class LeaveServiceImplTest {
 	}
 
 	@Test
-	@Ignore
 	public void findLeavesByIdExistTest() throws Exception {
 		List<LeaveRules> leaveRuleList = createLeaveRulesList();
 		leaveRulesRepository.saveAll(leaveRuleList);
@@ -68,7 +71,6 @@ public class LeaveServiceImplTest {
 
 	}
 	@Test 
-	@Ignore
 	public void findLeavesByIdNotExistTest() throws Exception {
 		try {
 			LeaveRules actualLeaveRule = leaveServiceImpl.findLeavesById(3);
@@ -83,7 +85,6 @@ public class LeaveServiceImplTest {
 	}
 
 	@Test
-	@Ignore
 	public void updateLeaveRulesTest() throws Exception{ 
 		
 			List<LeaveRules> leaveRuleList = createLeaveRulesList();
@@ -101,14 +102,61 @@ public class LeaveServiceImplTest {
 	}
 
 	@Test
-	@Ignore
 	public void deleteLeaveRulesTest() throws Exception{
-		
-			leaveServiceImpl.deleteLeaveRules(1);
-			assertThat(leaveRulesRepository.existsById(1)).isFalse(); 
-				
+		LeaveRules leaveRule = new LeaveRules();
+		leaveRule.setCarryOverCount(1);
+		leaveRule.setCombinableLeaves("Maternity");
+		leaveRule.setMaxLeavesCount(5);
+		leaveRule.setCostIncurred(100);
+		leaveRule.setName("New Leave");
+		leaveRulesRepository.save(leaveRule);		
+		leaveServiceImpl.deleteLeaveRules(2);
+		assertThat(leaveRulesRepository.existsById(2)).isFalse(); 	
 	}
 	
+	@Test
+	public void findLeaveRulesTest() {
+		List<LeaveRules> leaveRulesList = leaveServiceImpl.getLeaveRules();
+		assertNotNull(leaveRulesList);
+	}
 	
-
+	@Test
+	public void updateLeaveRulesTestForIdNotExistTest() {
+		try {
+			leaveServiceImpl.updateLeaveRules(10, new LeaveRules());
+		}catch (Exception e) {
+			assertEquals(e.getMessage(), "Leave With Leave Id: Not Found 10");
+		}
+	}
+	
+	@Test
+	public void deleteLeaveRulesTestForIdNotExistTest() {
+		try {
+			leaveServiceImpl.deleteLeaveRules(10);
+		}catch (Exception e) {
+			assertEquals(e.getMessage(), "Leave With Leave Id: Not Found 10");
+		}
+	}
+	
+	@Test
+	public void getLeaveStatsByIdTest() {
+		LeaveStats leaveStat = new LeaveStats();
+		LeaveStatsId leaveStatsId = new LeaveStatsId();
+		leaveStatsId.setEmployeeId(1);
+		leaveStatsId.setLeaveId(1);
+		leaveStat.setId(leaveStatsId);
+		leaveStat.setLeaveCount(10);
+		leaveStatsRepo.save(leaveStat);
+		
+		List<LeaveStats> leaveStats = leaveServiceImpl.getLeaveStatsById(1);
+		assertNotNull(leaveStats);
+		assertEquals(1, leaveStats.size());
+	}
+	
+	@Test
+	public void addLeaveStatsForNewUsersTest() {
+		leaveServiceImpl.addLeaveStatsForNewUsers(2);
+		List<LeaveStats> leaveStats = leaveStatsRepo.findAll();
+		assertNotNull(leaveStats);
+	}
 }
