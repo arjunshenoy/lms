@@ -16,6 +16,7 @@ import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
+import com.germanium.lms.service.iterator.Iterator;
 
 @Service
 public class LeaveRuleServiceImpl implements ILeaveRuleService {
@@ -43,8 +44,10 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 	public boolean resetLeaveStats() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
-		Optional<List<LeaveRules>> lapseLeaves = leaveRulesRepo.findByLapseDate(dateFormat.format(date));
-		lapseLeaves.get().stream().forEach(leave -> {
+		LeaveRuleCollectionImpl leaveRuleObj = new LeaveRuleCollectionImpl(leaveRulesRepo, dateFormat.format(date));
+		Iterator iterator = leaveRuleObj.getIterator();
+		while(iterator.hasNext()) {
+			LeaveRules leave = (LeaveRules)iterator.next();
 			List<LeaveStats> leaveStats = leaveStatsRepo.findByIdLeaveId(leave.getLeaveId());
 			leaveStats.stream().forEach(stats -> {
 				if (stats.getLeaveCount() > leave.getCarryOverCount()) {
@@ -54,7 +57,7 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 				}
 			});
 			leaveStatsRepo.saveAll(leaveStats);
-		});
+		};
 		return true;
 	}
 }

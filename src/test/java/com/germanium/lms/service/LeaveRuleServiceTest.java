@@ -69,7 +69,7 @@ public class LeaveRuleServiceTest {
 	public void resetLeaveStatsTest() {
 		List<LeaveRules> leaveRuleList = new ArrayList<>();
 		leaveRuleList.add(createLeaveRule());
-		when(leaveRuleRepo.findByLapseDate(anyString())).thenReturn(Optional.of(leaveRuleList));
+		when(leaveRuleRepo.findByLapseDate(anyString())).thenReturn(leaveRuleList);
 		LeaveStats stats = createLeaveStats();
 		List<LeaveStats> statsList = new ArrayList<>();
 		statsList.add(stats);
@@ -81,7 +81,7 @@ public class LeaveRuleServiceTest {
 	public void resetLeaveStatsTest2() {
 		List<LeaveRules> leaveRuleList = new ArrayList<>();
 		leaveRuleList.add(createLeaveRule());
-		when(leaveRuleRepo.findByLapseDate(anyString())).thenReturn(Optional.of(leaveRuleList));
+		when(leaveRuleRepo.findByLapseDate(anyString())).thenReturn(leaveRuleList);
 		LeaveStats stats = createLeaveStats();
 		stats.setLeaveCount(5);
 		List<LeaveStats> statsList = new ArrayList<>();
