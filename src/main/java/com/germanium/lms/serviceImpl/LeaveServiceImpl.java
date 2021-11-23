@@ -28,6 +28,7 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.utils.LeaveHelper;
 
 @Service
@@ -108,10 +109,11 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Override
 	public boolean addLeaveStatsForNewUsers(Integer userId) {
 		logger.info("Creating Leave Statistics for User Id: {}", userId);
-
-		List<LeaveRules> leaveRules = (List<LeaveRules>) leaveRulesRepo.findAll();
+		LeaveRuleCollectionImpl leaveRuleObj = new LeaveRuleCollectionImpl(leaveRulesRepo);
+		Iterator iterator = leaveRuleObj.getIterator();
 		List<LeaveStats> leaveStatsList = new ArrayList<>();
-		leaveRules.stream().forEach(leave -> {
+		while(iterator.hasNext()) {
+			LeaveRules leave = (LeaveRules)iterator.next();
 			LeaveStatsId id = new LeaveStatsId();
 			id.setEmployeeId(userId);
 			id.setLeaveId(leave.getLeaveId());
@@ -119,7 +121,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			ls.setId(id);
 			ls.setLeaveCount(leave.getLeaveCount());
 			leaveStatsList.add(ls);
-		});
+		};
 		leaveStatsRepo.saveAll(leaveStatsList);
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
