@@ -20,7 +20,7 @@ public interface ILeaveService {
 
 	public boolean deleteLeaveRules(Integer leaveId) throws ResourceNotFoundException;
 
-	public void addLeaveStatsForNewUsers(Integer userId);
+	public boolean addLeaveStatsForNewUsers(Integer userId);
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 

@@ -106,7 +106,7 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public void addLeaveStatsForNewUsers(Integer userId) {
+	public boolean addLeaveStatsForNewUsers(Integer userId) {
 		logger.info("Creating Leave Statistics for User Id: {}", userId);
 
 		List<LeaveRules> leaveRules = (List<LeaveRules>) leaveRulesRepo.findAll();
@@ -122,7 +122,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		});
 		leaveStatsRepo.saveAll(leaveStatsList);
 		logger.info("Rule statistics creation done successfully {}", userId);
-
+		return true;
 	}
 
 	@Override

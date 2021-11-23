@@ -55,7 +55,7 @@ public class LeaveServiceTest {
 	@MockBean
 	private ILeaveHistoryRepository leaveHistoryRepo;
 
-	SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+	private SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 
 	@Test
 	public void getActiveLeavesByIdTest() throws ParseException {
@@ -115,7 +115,7 @@ public class LeaveServiceTest {
 		try {
 			leaveService.createLeaveRequest(leaveRequest);
 		} catch (Exception e) {
-			assertEquals(e.getMessage(), "No data found in stats table for user 1");
+			assertEquals("No data found in stats table for user 1", e.getMessage());
 		}
 	}
 
@@ -126,7 +126,7 @@ public class LeaveServiceTest {
 		try {
 			leaveService.createLeaveRequest(leaveRequest);
 		} catch (Exception e) {
-			assertEquals(e.getMessage(), "User does not have the leave type requested");
+			assertEquals("User does not have the leave type requested", e.getMessage());
 		}
 	}
 
@@ -145,7 +145,7 @@ public class LeaveServiceTest {
 		try {
 			leaveService.createLeaveRequest(leaveRequest);
 		} catch (Exception e) {
-			assertEquals(e.getMessage(), "User Dosent Have enough Leaves");
+			assertEquals("User Dosent Have enough Leaves", e.getMessage());
 		}
 	}
 

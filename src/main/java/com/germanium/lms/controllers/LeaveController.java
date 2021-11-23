@@ -74,14 +74,13 @@ public class LeaveController {
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
 		logger.info("Fetching Leave Stats details for employee Id: {}", employeeId);
-		List<com.germanium.lms.model.LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
-		return ResponseEntity.ok().body(lstats);
+		return ResponseEntity.ok().body(leaveService.getLeaveStatsById(employeeId));
 	}
 
 	@PostMapping("leaveStats/{userId}")
-	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
-		leaveService.addLeaveStatsForNewUsers(userId);
-
+	public ResponseEntity<Boolean> addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
+		logger.info("Adding leave status for user : {}", userId);
+		return ResponseEntity.status(HttpStatus.OK).body(leaveService.addLeaveStatsForNewUsers(userId));
 	}
 
 	@PostMapping("request")
@@ -96,7 +95,7 @@ public class LeaveController {
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-
+		logger.info("Finding active leaves for leave {}", leaveId);
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 
