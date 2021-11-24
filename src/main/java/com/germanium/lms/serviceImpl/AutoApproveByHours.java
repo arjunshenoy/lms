@@ -23,36 +23,16 @@ public class AutoApproveByHours extends AutoApproveDecorator{
 		super(decoratedRule);
 		this.leaveHistRepo = leaveHistRepo;
 	}
+	
 	@Override
 	public String checkApprovalRule(Leave leaveRequest, String prev) {
 		int depId = leaveRequest.getDepartmentId();
-		Date current = leaveRequest.getFromDate();
-		Date end = leaveRequest.getToDate();
-
-		String result = prev;
-		while (!result.equals("reject") && current.before(end)) {
-			List<LeaveHistory> leaves = leaveHistRepo.findClashingLeaves(current);
-			if (leaves.size()*8 > getWorkingHoursRequired(depId)) {
-				result = "reject";
-				break; 
-			}
-
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(current);
-			calendar.add(Calendar.DATE, 1);
-			current = calendar.getTime();
-		}
-		
-		return getRejectOrQueue(leaveRequest, result);
+		float hrs = super.getParamRequired(userService, "/workHours", depId);
+		return super.runHoursRule(leaveRequest, 8, hrs, prev);
 	}
-	
-	public float getWorkingHoursRequired(int depId) {
-		RestTemplate restTemplate = new RestTemplate();
-		String resourceUrl
-		  = userService + "/api/v1/department/" +String.valueOf(depId) + "/workHours";
-		ResponseEntity<Float> response
-		  = restTemplate.getForEntity(resourceUrl, Float.class);
-		return response.getBody();
-	}
-	
+
+	@Override
+	protected List<LeaveHistory> getClashLeaves(Date current) {
+		return leaveHistRepo.findClashingLeaves(current);
+	}	
 }

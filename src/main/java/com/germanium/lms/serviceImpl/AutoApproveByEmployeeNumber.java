@@ -34,33 +34,13 @@ public class AutoApproveByEmployeeNumber extends AutoApproveDecorator{
 	@Override
 	public String checkApprovalRule(Leave leaveRequest, String prev) {
 		int depId = leaveRequest.getDepartmentId();
-		Date current = leaveRequest.getFromDate();
-		Date end = leaveRequest.getToDate();
+		float hrs = super.getParamRequired(userService, "/workEmployees", depId);
+		return super.runHoursRule(leaveRequest, 1, hrs, prev);
+	}
 
-		String result = prev;
-		while (!result.equals("reject") && current.before(end)) {
-			List<LeaveHistory> leaves = leaveHistRepo.findClashingLeaves(current);
-			if (leaves.size() > getWorkingEmployeesRequired(depId)) {
-				result = "reject";
-				break; 
-			}
-
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(current);
-			calendar.add(Calendar.DATE, 1);
-			current = calendar.getTime();
-		}
-		
-		return getRejectOrQueue(leaveRequest, result);
+	@Override
+	protected List<LeaveHistory> getClashLeaves(Date current) {
+		return leaveHistRepo.findClashingLeaves(current);
 	}
 	
-	public float getWorkingEmployeesRequired(int depId) {
-		RestTemplate restTemplate = new RestTemplate();
-		String resourceUrl
-		  = userService + "/api/v1/department/" +String.valueOf(depId) + "/workEmployees";
-		ResponseEntity<Float> response
-		  = restTemplate.getForEntity(resourceUrl, Float.class);
-		return response.getBody();
-	}
-
 }
