@@ -141,13 +141,12 @@ public class LeaveControllerTest {
 		LeaveRules leaveRule1 = new LeaveRules();
 		leaveRule1.setLeaveId(1);
 		leaveRule1.setName("Sick Leave");
-		List<LeaveRules> leaveRulesList = List.of(leaveRule1);
-		Mockito.when(leaveService.createLeaveRules(ArgumentMatchers.any())).thenReturn(leaveRulesList);
-		String json = mapper.writeValueAsString(leaveRulesList);
+		Mockito.when(leaveService.createLeaveRules(ArgumentMatchers.any())).thenReturn(leaveRule1);
+		String json = mapper.writeValueAsString(leaveRule1);
 		mockMvc.perform(post("/api/v1/leave/leaveType").contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("utf-8").content(json).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated()).andExpect(MockMvcResultMatchers.jsonPath("$[0].leaveId").value("1"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Sick Leave"));
+				.andExpect(status().isCreated()).andExpect(MockMvcResultMatchers.jsonPath("leaveId").value("1"))
+				.andExpect(MockMvcResultMatchers.jsonPath("name").value("Sick Leave"));
 	}
 
 	@Test

@@ -14,7 +14,7 @@ public interface ILeaveService {
 
 	public LeaveRules findLeavesById(Integer leaveId) throws ResourceNotFoundException;
 
-	public List<LeaveRules> createLeaveRules(List<LeaveRules> leaveType);
+	public LeaveRules createLeaveRules(LeaveRules leaveType);
 
 	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws ResourceNotFoundException;
 

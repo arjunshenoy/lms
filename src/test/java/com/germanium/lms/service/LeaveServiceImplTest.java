@@ -39,12 +39,12 @@ public class LeaveServiceImplTest {
 	public void createLeaveRulesTest() { 
 		List<LeaveRules> expectedList = createLeaveRulesList();
 
-		List<LeaveRules> actualLeaveRules = leaveServiceImpl.createLeaveRules(expectedList);
+		
+		LeaveRules actualLeaveRules = leaveServiceImpl.createLeaveRules(expectedList.get(0));
 
-		assertEquals(expectedList.size(), actualLeaveRules.size());
 		assertNotNull(actualLeaveRules);
-		assertEquals(expectedList.get(0).getLeaveId(), actualLeaveRules.get(0).getLeaveId());
-		assertEquals(expectedList.get(0).getName(), actualLeaveRules.get(0).getName());
+		assertEquals(expectedList.get(0).getLeaveId(), actualLeaveRules.getLeaveId());
+		assertEquals(expectedList.get(0).getName(), actualLeaveRules.getName());
 	}
 
 	private List<LeaveRules> createLeaveRulesList() { 
@@ -54,6 +54,7 @@ public class LeaveServiceImplTest {
 		leaveRule.setLeaveId(1);
 		leaveRule.setName("casual leave");
 		leaveRule.setCombinableLeaves("hello");
+		leaveRule.setRuleExpression("");
 
 		
 		leaveRulesList.add(leaveRule);

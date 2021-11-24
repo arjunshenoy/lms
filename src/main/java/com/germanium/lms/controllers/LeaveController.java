@@ -50,8 +50,8 @@ public class LeaveController {
 	}
 
 	@PostMapping("leaveType")
-	public ResponseEntity<List<LeaveRules>> createLeaveRules(@Valid @RequestBody List<LeaveRules> leaveType) {
-		List<LeaveRules> leaveTypeDetails = leaveService.createLeaveRules(leaveType);
+	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRules leaveType) {
+		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
 	}
 
