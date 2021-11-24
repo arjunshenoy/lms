@@ -167,7 +167,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		mailRequest.setSubject(subject);
 		mailRequest.setUserId(employeeId);
 		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
-				MailRequestDto.class);
+				Boolean.class);
 	}
 
 	@Override
@@ -225,17 +225,17 @@ public class LeaveServiceImpl implements ILeaveService {
 						"No data found in Leave History table for Leave Request Id " + leaveRequestId);
 			}
 
-			if (checkForPendingLeaveApproval(optionalLeaveHistory.get().getFromDate(),
-					optionalLeaveHistory.get().getToDate(), optionalLeaveHistory.get().getDepartmentId())) {
-				logger.info("Approved one pending leave");
-			}
-
 			optionalLeaveHistory.get().setLeaveStatus("CANCELLED");
 			leaveHistoryRepo.save(optionalLeaveHistory.get());
 			incrementLeaveCount(optionalLeaveHistory.get().getFromDate(), optionalLeaveHistory.get().getToDate(),
 					optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId(),
 					optionalLeaveHistory.get().getLeaveId());
 
+			if (checkForPendingLeaveApproval(optionalLeaveHistory.get().getFromDate(),
+					optionalLeaveHistory.get().getToDate(), optionalLeaveHistory.get().getDepartmentId())) {
+				logger.info("Approved one pending leave");
+			}
+			
 			String content = "Leave Application cancelled successfully for User Id : "
 					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + "Leave Details: \n"
 					+ "Leave type: " + optionalLeaveHistory.get().getLeaveId() + "\n Leave Start Date: "
@@ -252,10 +252,7 @@ public class LeaveServiceImpl implements ILeaveService {
 				throw new ResourceNotFoundException(
 						"No data found in Active Leave table for Leave Request Id " + leaveRequestId);
 			}
-			if (checkForPendingLeaveApproval(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
-					optionalLeave.get().getDepartmentId())) {
-				logger.info("Approved one pending leave");
-			}
+			
 
 			LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
 			activeLeaveRepo.deleteById(leaveRequestId);
@@ -263,7 +260,10 @@ public class LeaveServiceImpl implements ILeaveService {
 			leaveHistoryRepo.save(leaveHistory);
 			incrementLeaveCount(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
 					optionalLeave.get().getEmployeeId(), optionalLeave.get().getLeaveId());
-
+			if (checkForPendingLeaveApproval(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
+					optionalLeave.get().getDepartmentId())) {
+				logger.info("Approved one pending leave");
+			}
 			String content = "Leave Application withdrawn successfully for User Id : "
 					+ optionalLeave.get().getEmployeeId() + "Leave Details: \n" + "Leave type: "
 					+ optionalLeave.get().getLeaveId() + "\n Leave Start Date: " + optionalLeave.get().getFromDate()
@@ -292,7 +292,7 @@ public class LeaveServiceImpl implements ILeaveService {
 				+ selectedLeave.getEmployeeId() + "Leave Details: \n" + "Leave type: "
 				+ selectedLeave.getLeaveId() + "\n Leave Start Date: " + selectedLeave.getFromDate()
 				+ "\n Leave End Date: " + selectedLeave.getToDate();
-		String subject = "Leave Application Cancelled for User Id : " + selectedLeave.getEmployeeId();
+		String subject = "Leave Application Approved for User Id : " + selectedLeave.getEmployeeId();
 		sendMail(content, subject, selectedLeave.getEmployeeId());
 		return true;
 	}
