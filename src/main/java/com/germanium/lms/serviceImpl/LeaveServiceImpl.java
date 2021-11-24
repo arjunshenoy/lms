@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +76,32 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
-	public List<LeaveRules> createLeaveRules(List<LeaveRules> leaveType) {
+	@Transactional
+	public LeaveRules createLeaveRules(LeaveRules leaveType) {
 		logger.info("Saving details into repository");
-		return (List<LeaveRules>) leaveRulesRepo.saveAll(leaveType);
+		LeaveRules savedRule = leaveRulesRepo.save(leaveType);
+		if (!savedRule.getRuleExpression().isEmpty()) {
+			// Rule Expression is not empty so we should filter out the users who satisfy
+			// the rule condition
+			// A call will be made to the user service to get the list of users
+
+			List<Integer> userIds = leaveRuleService.getUserForRuleCondition(savedRule.getRuleExpression());
+			List<LeaveStats> leaveStatsForNewLeave = new ArrayList<LeaveStats>();
+			userIds.stream().forEach(userId -> {
+				LeaveStatsId id = new LeaveStatsId();
+				id.setEmployeeId(userId);
+				id.setLeaveId(savedRule.getLeaveId());
+				LeaveStats ls = new LeaveStats();
+				ls.setId(id);
+				ls.setLeaveCount(savedRule.getLeaveCount());
+				leaveStatsForNewLeave.add(ls);
+			});
+			leaveStatsRepo.saveAll(leaveStatsForNewLeave);
+			logger.info("Rule statistics creation done successfully for new Rule {}", savedRule.getName());
+
+		}
+		return savedRule;
+
 	}
 
 	@Override
@@ -128,6 +153,7 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	@Override
+	@Transactional
 	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception {
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());

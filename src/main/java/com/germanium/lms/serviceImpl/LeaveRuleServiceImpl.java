@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.dto.MailRequestDto;
 import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
@@ -25,6 +28,14 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 
 	@Autowired
 	ILeaveStatisticsRepository leaveStatsRepo;
+
+	@Autowired
+	RestTemplate restTemplate;
+
+	@Value("${user.service.url}")
+	private String userService;
+
+	private static final String USER_DETAILS_ENDPOINT = "/api/v1/user/profiles/query";
 
 	public boolean checkLeaveTypeRequestedForUserId(int leaveId, Integer userId) {
 		Optional<LeaveRules> leaveDetails = leaveRulesRepo.findById(leaveId);
@@ -59,5 +70,16 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 			leaveStatsRepo.saveAll(leaveStats);
 		};
 		return true;
+	}
+
+	@Override
+	public List<Integer> getUserForRuleCondition(String ruleExpression) {
+		MailRequestDto expression = new MailRequestDto();
+		expression.setContent(ruleExpression);
+		return restTemplate.postForObject(
+				new StringBuilder(userService).append(USER_DETAILS_ENDPOINT).toString(),
+				expression, List.class);
+
+	
 	}
 }
