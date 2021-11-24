@@ -35,12 +35,7 @@ public class AutoApproveByEmployeeNumber extends AutoApproveDecorator{
 	public String checkApprovalRule(Leave leaveRequest, String prev) {
 		int depId = leaveRequest.getDepartmentId();
 		float hrs = super.getParamRequired(userService, "/workEmployees", depId);
-		return super.runHoursRule(leaveRequest, 1, hrs, prev);
+		return super.runHoursRule(leaveRequest, leaveHistRepo, 1, hrs, prev);
 	}
 
-	@Override
-	protected List<LeaveHistory> getClashLeaves(Date current) {
-		return leaveHistRepo.findClashingLeaves(current);
-	}
-	
 }

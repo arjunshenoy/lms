@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.factory.Leave;
+import com.germanium.lms.repository.ILeaveHistoryRepository;
 
 public abstract class AutoApproveDecorator implements IAutoApprove {
 	protected IAutoApprove decoratedRule;
@@ -22,12 +23,12 @@ public abstract class AutoApproveDecorator implements IAutoApprove {
 		return check;
 	}
 	
-	public String runHoursRule(Leave leaveRequest, int scale, float hrs, String prev) {
+	public String runHoursRule(Leave leaveRequest, ILeaveHistoryRepository leaveHistRepo, int scale, float hrs, String prev) {
 		Date current = leaveRequest.getFromDate();
 		Date end = leaveRequest.getToDate();
 		String result = prev;
 		while (!result.equals("reject") && current.before(end)) {
-			List<LeaveHistory> leaves = getClashLeaves(current);
+			List<LeaveHistory> leaves = getClashLeaves(leaveHistRepo, current);
 			if (leaves.size()*scale > hrs) {
 				result = "reject";
 				break; 
@@ -42,8 +43,6 @@ public abstract class AutoApproveDecorator implements IAutoApprove {
 		return getRejectOrQueue(leaveRequest, result);
 	}
 	
-	protected abstract List<LeaveHistory> getClashLeaves(Date current);
-	
 	public float getParamRequired(String userService, String resource, int depId) {
 		RestTemplate restTemplate = new RestTemplate();
 		String resourceUrl
@@ -51,5 +50,9 @@ public abstract class AutoApproveDecorator implements IAutoApprove {
 		ResponseEntity<Float> response
 		  = restTemplate.getForEntity(resourceUrl, Float.class);
 		return response.getBody();
+	}
+	
+	protected List<LeaveHistory> getClashLeaves(ILeaveHistoryRepository leaveHistRepo, Date current) {
+		return leaveHistRepo.findClashingLeaves(current);
 	}
 }
