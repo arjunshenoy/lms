@@ -24,7 +24,9 @@ public interface ILeaveService {
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 
-	public void createLeaveRequest(Leave leaveRequest) throws Exception;
+	public String autoApproval(Leave leaveRequest) throws Exception;
+
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
 	

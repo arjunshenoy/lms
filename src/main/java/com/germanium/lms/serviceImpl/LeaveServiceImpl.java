@@ -153,6 +153,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		return true;
 	}
 	
+	@Override
 	public String autoApproval(Leave leaveRequest) throws Exception {
 		// decorate/chain with each rule
 		IAutoApprove autoApproval = new AutoApproveByEmployeeNumber(
@@ -194,9 +195,7 @@ public class LeaveServiceImpl implements ILeaveService {
 				+ leaveRequest.getFromDate() + "\n Leave End Date: " + leaveRequest.getToDate();
 		String subject = "Leave Application by User Id : " + leaveRequest.getEmployeeId() + " submitted successfully";
 		sendMail(content, subject, leaveRequest.getEmployeeId());
-		String autoApproval = autoApproval(leaveRequest);
-		if (!autoApproval.equals("queue")) // if queued leave it in active leaves
-			takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
+		return savedLeave;
 	}
 
 	private void sendMail(String content, String subject, int employeeId) {
