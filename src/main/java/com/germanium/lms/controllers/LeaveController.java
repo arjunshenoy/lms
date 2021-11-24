@@ -87,7 +87,10 @@ public class LeaveController {
 	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) {
 		try {
 			Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
-			leaveService.createLeaveRequest(leaveObject);
+			ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
+			String autoApproval = leaveService.autoApproval(leaveObject);
+			if (!autoApproval.equals("queue")) // if queued leave it in active leaves
+				takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
