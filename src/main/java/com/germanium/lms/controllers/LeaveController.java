@@ -32,24 +32,23 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
-
+	
+	Log log = Log.getInstance();
+	
 	@GetMapping("leaveType")
 	public ResponseEntity<List<LeaveRules>> getLeaveRules() throws Exception {
-		Log log = Log.getInstance();
 		log.logger.info("Request for fetching leave rules received");
 		return ResponseEntity.ok().body(leaveService.getLeaveRules());
 	}
 
 	@GetMapping("leaveType/{leaveId}")
-	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId){
-		Log log = Log.getInstance();
-		log.logger.info("Request for fetching leaves for ID" + leaveId +  "received");
+	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) {
+		log.logger.info("Request for fetching leaves for ID" + leaveId + "received");
 		return ResponseEntity.ok().body(leaveService.findLeavesById(leaveId));
 	}
 
 	@PostMapping("leaveType")
 	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRules leaveType) {
-  	Log log = Log.getInstance();
 		log.logger.info("Request for adding new leave received");
 		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
@@ -58,7 +57,6 @@ public class LeaveController {
 	@PutMapping("leaveType/{leaveId}")
 	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
 			@Valid @RequestBody LeaveRules leaveRule) throws Exception {
-		Log log = Log.getInstance();
 		log.logger.info("Request for updating leave rules received");
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
@@ -66,8 +64,8 @@ public class LeaveController {
 	}
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
-	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId) throws ResourceNotFoundException {
-		Log log = Log.getInstance();
+	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
+			throws ResourceNotFoundException {
 		log.logger.info("Delete request received for leave ID :" + leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
@@ -75,14 +73,12 @@ public class LeaveController {
 
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
-		Log log = Log.getInstance();
 		log.logger.info("Fetching Leave Stats details for employee Id:" + employeeId);
 		return ResponseEntity.ok().body(leaveService.getLeaveStatsById(employeeId));
 	}
 
 	@PostMapping("leaveStats/{userId}")
 	public ResponseEntity<Boolean> addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
-		Log log = Log.getInstance();
 		log.logger.info("Adding leave stats for new Users");
 		return ResponseEntity.status(HttpStatus.OK).body(leaveService.addLeaveStatsForNewUsers(userId));
 	}
@@ -102,8 +98,7 @@ public class LeaveController {
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-		Log log = Log.getInstance();
-		log.logger.info("Finding active leaves for leave "+leaveId);
+		log.logger.info("Finding active leaves for leave " + leaveId);
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 
@@ -117,12 +112,11 @@ public class LeaveController {
 		}
 
 	}
-	
+
 	@PostMapping("cancelRequest/{leaveRequestId}/{cancelDecision}")
 	public ResponseEntity<Boolean> cancelWithdrawLeave(@PathVariable("leaveRequestId") Integer leaveRequestId,
-			@PathVariable("cancelDecision")  String cancelDecision) {
-		Log log = Log.getInstance();
-		log.logger.info("Request received for" + cancelDecision +" leave");
+			@PathVariable("cancelDecision") String cancelDecision) {
+		log.logger.info("Request received for" + cancelDecision + " leave");
 		try {
 			return ResponseEntity.ok().body(leaveService.cancelWithdrawLeave(leaveRequestId, cancelDecision));
 		} catch (Exception e) {

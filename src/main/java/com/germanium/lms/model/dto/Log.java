@@ -6,12 +6,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import org.springframework.context.annotation.Bean;
+
 public class Log {
 	public Logger logger;
 	FileHandler handler;
 	private static final Log instance = new Log();
 	public String fileName = "log";
 
+	@Bean
 	public static Log getInstance() {
 		return instance;
 	}
