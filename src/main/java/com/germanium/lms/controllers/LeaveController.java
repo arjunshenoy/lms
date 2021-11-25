@@ -102,7 +102,8 @@ public class LeaveController {
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-		logger.info("Finding active leaves for leave {}", leaveId);
+		Log log = Log.getInstance();
+		log.logger.info("Finding active leaves for leave "+leaveId);
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 
