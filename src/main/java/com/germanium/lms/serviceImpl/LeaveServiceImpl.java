@@ -245,6 +245,13 @@ public class LeaveServiceImpl implements ILeaveService {
 			incrementLeaveCount(optionalLeave.get().getFromDate(), optionalLeave.get().getToDate(),
 					optionalLeave.get().getEmployeeId(), optionalLeave.get().getLeaveId());
 		}
+		
+		String content = "Leave Application by User Id : " + optionalLeave.get().getEmployeeId() 
+				+ "\n  Decision: "+leaveHistory.getLeaveStatus()
+				+ "\n Leave Details: \n" + "Leave type: " + optionalLeave.get().getLeaveId() + "\n Leave Start Date: "
+				+ optionalLeave.get().getFromDate() + "\n Leave End Date: " + optionalLeave.get().getToDate();
+		String subject = "Leave Application Decision for Leave Request ID :" + optionalLeave.get().getLeaveRequestId();
+		sendMail(content, subject, optionalLeave.get().getEmployeeId());
 
 		return true;
 

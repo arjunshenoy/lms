@@ -1,31 +1,18 @@
 package com.germanium.lms.serviceImpl;
 
-import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.service.decorator.AutoApproveDecorator;
 import com.germanium.lms.service.decorator.IAutoApprove;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import com.germanium.lms.repository.ILeaveHistoryRepository;
 
-public class AutoApproveByEmployeeNumber extends AutoApproveDecorator{
+public class AutoApproveByEmployeeNumber extends AutoApproveDecorator {
 	ILeaveHistoryRepository leaveHistRepo;
-	
+
 	@Value("${user.service.url}")
-	private String userService;
-	
+	private String userService = "http://localhost:8081";
+
 	public AutoApproveByEmployeeNumber(IAutoApprove decoratedRule, ILeaveHistoryRepository leaveHistRepo) {
 		super(decoratedRule);
 		this.leaveHistRepo = leaveHistRepo;
