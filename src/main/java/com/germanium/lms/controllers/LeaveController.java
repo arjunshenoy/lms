@@ -84,16 +84,13 @@ public class LeaveController {
 	}
 
 	@PostMapping("request")
-	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) {
-		try {
+	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) throws Exception {
+		
 			Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
 			ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
 			String autoApproval = leaveService.autoApproval(leaveObject);
 			if (!autoApproval.equals("queue")) // if queued leave it in active leaves
 				takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@GetMapping("request/{leaveId}")
