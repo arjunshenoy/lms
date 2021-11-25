@@ -48,10 +48,10 @@ public class LeaveController {
 	}
 
 	@PostMapping("leaveType")
-	public ResponseEntity<List<LeaveRules>> createLeaveRules(@Valid @RequestBody List<LeaveRules> leaveType) throws Exception {
-		Log log = Log.getInstance();
+	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRules leaveType) {
+  	Log log = Log.getInstance();
 		log.logger.info("Request for adding new leave received");
-		List<LeaveRules> leaveTypeDetails = leaveService.createLeaveRules(leaveType);
+		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
 	}
 
@@ -74,26 +74,27 @@ public class LeaveController {
 	}
 
 	@GetMapping("leaveStats/{employeeId}")
-	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) throws Exception {
+	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
 		Log log = Log.getInstance();
 		log.logger.info("Fetching Leave Stats details for employee Id:" + employeeId);
-		List<com.germanium.lms.model.LeaveStats> lstats = leaveService.getLeaveStatsById(employeeId);
-		return ResponseEntity.ok().body(lstats);
+		return ResponseEntity.ok().body(leaveService.getLeaveStatsById(employeeId));
 	}
 
 	@PostMapping("leaveStats/{userId}")
-	public void addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) throws Exception {
+	public ResponseEntity<Boolean> addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
 		Log log = Log.getInstance();
 		log.logger.info("Adding leave stats for new Users");
-		leaveService.addLeaveStatsForNewUsers(userId);
-
+		return ResponseEntity.status(HttpStatus.OK).body(leaveService.addLeaveStatsForNewUsers(userId));
 	}
 
 	@PostMapping("request")
 	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) {
 		try {
 			Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
-			leaveService.createLeaveRequest(leaveObject);
+			ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
+			String autoApproval = leaveService.autoApproval(leaveObject);
+			if (!autoApproval.equals("queue")) // if queued leave it in active leaves
+				takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -101,7 +102,7 @@ public class LeaveController {
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-
+		logger.info("Finding active leaves for leave {}", leaveId);
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 

@@ -14,15 +14,17 @@ public interface ILeaveService {
 
 	public LeaveRules findLeavesById(Integer leaveId) throws ResourceNotFoundException;
 
-	public List<LeaveRules> createLeaveRules(List<LeaveRules> leaveType);
+	public LeaveRules createLeaveRules(LeaveRules leaveType);
 
 	public LeaveRules updateLeaveRules(Integer leaveId, LeaveRules leaveRule) throws ResourceNotFoundException;
 
 	public boolean deleteLeaveRules(Integer leaveId) throws ResourceNotFoundException;
 
-	public void addLeaveStatsForNewUsers(Integer userId);
+	public boolean addLeaveStatsForNewUsers(Integer userId);
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
+
+	public String autoApproval(Leave leaveRequest) throws Exception;
 
 	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception;
 
