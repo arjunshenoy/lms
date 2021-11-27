@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
-
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -226,6 +226,26 @@ public class LeaveServiceImpl implements ILeaveService {
 
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
 
+		// Finding approved leaves ending with date of yesterday
+		LeaveHistory alreadyExistingLeaveHistory = leaveHistoryRepo
+				.findByFromDateAndIsApproved(DateUtils.addDays(leaveHistory.getFromDate(), -1), "APPROVED");
+		if (alreadyExistingLeaveHistory != null) {
+			Optional<LeaveRules> existingLeaveRule = leaveRulesRepo.findById(alreadyExistingLeaveHistory.getLeaveId());
+			if (existingLeaveRule.isEmpty())
+				throw new ResourceNotFoundException("Leave rules not exist for leave ID : " + leaveRequestId);
+			//Finding leave rules for the applied leave
+			Optional<LeaveRules> appliedLeave = leaveRulesRepo.findById(optionalLeave.get().getLeaveId());
+			if (!existingLeaveRule.get().getCombinableLeaves().contains(appliedLeave.get().getName())) {
+				logger.warn("Leaves {} and {} can not be combined.", existingLeaveRule.get().getName(), appliedLeave.get().getName());
+				return setDecision(leaveHistory, optionalLeave, leaveRequestId, "REJECTED");
+			} else {
+				return setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+			}
+		}
+		return setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+	}
+
+	private Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId, String decision) throws Exception {
 		if (decision.equals("approve")) {
 			leaveHistory.setLeaveStatus("APPROVED");
 		} else {
