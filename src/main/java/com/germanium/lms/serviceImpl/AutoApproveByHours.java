@@ -11,7 +11,7 @@ public class AutoApproveByHours extends AutoApproveDecorator {
 	private ILeaveHistoryRepository leaveHistRepo;
 
 	@Value("${user.service.url}")
-	private String userService = "http://localhost:8081";
+	private String userService = "http://user-service:8081";
 
 	public AutoApproveByHours(IAutoApprove decoratedRule, ILeaveHistoryRepository leaveHistRepo) {
 		super(decoratedRule);

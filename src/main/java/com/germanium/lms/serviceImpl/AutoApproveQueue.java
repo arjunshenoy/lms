@@ -14,7 +14,7 @@ import com.germanium.lms.service.decorator.IAutoApprove;
 
 public class AutoApproveQueue implements IAutoApprove {
 	@Value("${user.service.url}")
-	private String userService = "http://localhost:8081";
+	private String userService = "http://user-service:8081";
 
 	@Override
 	public String checkApprovalRule(Leave leaveRequest, String prev) {
