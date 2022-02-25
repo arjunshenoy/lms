@@ -14,13 +14,12 @@ import com.germanium.lms.repository.ILeaveHistoryRepository;
 public abstract class AutoApproveDecorator implements IAutoApprove {
 	protected IAutoApprove decoratedRule;
 	
-	public AutoApproveDecorator(IAutoApprove decoratedRule) {
+	protected  AutoApproveDecorator(IAutoApprove decoratedRule) {
 		this.decoratedRule = decoratedRule;
 	}
 
 	public String getRejectOrQueue(Leave leaveRequest, String prev) {
-		String check = decoratedRule.checkApprovalRule(leaveRequest, prev);
-		return check;
+		return decoratedRule.checkApprovalRule(leaveRequest, prev);
 	}
 	
 	public String runHoursRule(Leave leaveRequest, ILeaveHistoryRepository leaveHistRepo, int scale, float hrs, String prev) {
@@ -46,7 +45,7 @@ public abstract class AutoApproveDecorator implements IAutoApprove {
 	public float getParamRequired(String userService, String resource, int depId) {
 		RestTemplate restTemplate = new RestTemplate();
 		String resourceUrl
-		  = userService + "/api/v1/department/" +String.valueOf(depId) + resource;
+		  = userService + "/api/v1/department/" +depId + resource;
 		ResponseEntity<Float> response
 		  = restTemplate.getForEntity(resourceUrl, Float.class);
 		return response.getBody();

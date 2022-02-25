@@ -3,6 +3,7 @@ package com.germanium.lms.controllers;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
@@ -32,79 +34,79 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
-	
+
 	Log log = Log.getInstance();
-	
+
 	@GetMapping("leaveType")
-	public ResponseEntity<List<LeaveRules>> getLeaveRules() throws Exception {
-		log.logger.info("Request for fetching leave rules received");
+	public ResponseEntity<List<LeaveRules>> getLeaveRules() {
+		log.getLogger().info("Request for fetching leave rules received");
 		return ResponseEntity.ok().body(leaveService.getLeaveRules());
 	}
 
 	@GetMapping("leaveType/{leaveId}")
 	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) {
-		log.logger.info("Request for fetching leaves for ID" + leaveId + "received");
+		log.getLogger().info(String.format("Request for fetching leaves for ID %d received", leaveId));
 		return ResponseEntity.ok().body(leaveService.findLeavesById(leaveId));
 	}
 
 	@PostMapping("leaveType")
 	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRules leaveType) {
-		log.logger.info("Request for adding new leave received");
+		log.getLogger().info("Request for adding new leave received");
 		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
 	}
 
 	@PutMapping("leaveType/{leaveId}")
-	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
-			@Valid @RequestBody LeaveRules leaveRule) throws Exception {
-		log.logger.info("Request for updating leave rules received");
+	public ResponseEntity<String> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
+			@Valid @RequestBody LeaveRules leaveRule) throws ResourceNotFoundException {
+		log.getLogger().info("Request for updating leave rules received");
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body("Leave type Updated Successfully");
 	}
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
-	public ResponseEntity<?> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
+	public ResponseEntity<Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
 			throws ResourceNotFoundException {
-		log.logger.info("Delete request received for leave ID :" + leaveId);
+		log.getLogger().info("Delete request received for leave ID :" + leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
 	}
 
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
-		log.logger.info("Fetching Leave Stats details for employee Id:" + employeeId);
+		log.getLogger().info(String.format("Fetching Leave Stats details for employee ID %s" , employeeId));
 		return ResponseEntity.ok().body(leaveService.getLeaveStatsById(employeeId));
 	}
 
 	@PostMapping("leaveStats/{userId}")
 	public ResponseEntity<Boolean> addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
-		log.logger.info("Adding leave stats for new Users");
+		log.getLogger().info("Adding leave stats for new Users");
 		return ResponseEntity.status(HttpStatus.OK).body(leaveService.addLeaveStatsForNewUsers(userId));
 	}
 
 	@PostMapping("request")
-	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) throws Exception {
-		
-			Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
-			ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
-			String autoApproval = leaveService.autoApproval(leaveObject);
-			if (!autoApproval.equals("queue")) // if queued leave it in active leaves
-				takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
+	public void createLeaveRequest(@Valid @RequestBody LeaveRequestDto leaveRequest) throws LeaveServiceException {
+
+		Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
+		ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
+		String autoApproval = leaveService.autoApproval(leaveObject);
+		if (!autoApproval.equals("queue")) // if queued leave it in active leaves
+			takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 	}
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-		log.logger.info("Finding active leaves for leave " + leaveId);
+		log.getLogger().info(String.format("Finding active leaves for leave ID %d", leaveId));
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 
 	@PostMapping("request/{leaveId}/{decision}")
-	public ResponseEntity<?> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
+	public ResponseEntity<Boolean> takeLeaveDecision(@PathVariable("leaveId") Integer leaveId,
 			@PathVariable String decision) {
 		try {
 			return ResponseEntity.ok().body(leaveService.takeLeaveDecision(leaveId, decision));
-		} catch (Exception e) {
+		} catch (LeaveServiceException e) {
 			return ResponseEntity.ok().body(false);
 		}
 
@@ -113,7 +115,7 @@ public class LeaveController {
 	@PostMapping("cancelRequest/{leaveRequestId}/{cancelDecision}")
 	public ResponseEntity<Boolean> cancelWithdrawLeave(@PathVariable("leaveRequestId") Integer leaveRequestId,
 			@PathVariable("cancelDecision") String cancelDecision) {
-		log.logger.info("Request received for" + cancelDecision + " leave");
+		log.getLogger().info(String.format("Request received for %s leave", cancelDecision));
 		try {
 			return ResponseEntity.ok().body(leaveService.cancelWithdrawLeave(leaveRequestId, cancelDecision));
 		} catch (Exception e) {

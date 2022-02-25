@@ -2,6 +2,7 @@ package com.germanium.lms.service;
 
 import java.util.List;
 
+import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
@@ -24,13 +25,13 @@ public interface ILeaveService {
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 
-	public String autoApproval(Leave leaveRequest) throws Exception;
+	public String autoApproval(Leave leaveRequest) ;
 
-	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws Exception;
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws LeaveServiceException;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
 	
-	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws Exception;
+	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws LeaveServiceException;
 	
 	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
 }

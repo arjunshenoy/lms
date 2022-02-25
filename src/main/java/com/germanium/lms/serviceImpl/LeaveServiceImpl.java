@@ -154,7 +154,7 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 	
 	@Override
-	public String autoApproval(Leave leaveRequest) throws Exception {
+	public String autoApproval(Leave leaveRequest) {
 		// decorate/chain with each rule
 		IAutoApprove autoApproval = new AutoApproveByEmployeeNumber(
 									new AutoApproveByHours(
