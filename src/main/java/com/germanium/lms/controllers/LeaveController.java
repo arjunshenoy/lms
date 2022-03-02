@@ -52,7 +52,7 @@ public class LeaveController {
 
 	@PostMapping("leaveType")
 	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRulesDto leaveTypeDto) {
-		log.logger.info("Request for adding new leave received");
+		log.getLogger().info("Request for adding new leave received");
 		LeaveRules leaveType = modelMapper.map(leaveTypeDto, LeaveRules.class);
 		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
@@ -61,7 +61,7 @@ public class LeaveController {
 	@PutMapping("leaveType/{leaveId}")
 	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
 			@Valid @RequestBody LeaveRulesDto leaveRuleDto) throws Exception {
-		log.logger.info("Request for updating leave rules received");
+		log.getLogger().info("Request for updating leave rules received");
 		LeaveRules leaveRule = modelMapper.map(leaveRuleDto, LeaveRules.class);
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
