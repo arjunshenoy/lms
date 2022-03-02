@@ -2,6 +2,8 @@ package com.germanium.lms.controllers;
 
 import java.util.List;
 import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +37,9 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
+	
+	@Autowired
+    private ModelMapper modelMapper;
 
 	Log log = Log.getInstance();
 
