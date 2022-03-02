@@ -23,6 +23,7 @@ import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.dto.LeaveRequestDto;
+import com.germanium.lms.model.dto.LeaveRulesDto;
 import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
