@@ -68,7 +68,7 @@ public class LeaveRuleServiceImpl implements ILeaveRuleService {
 				}
 			});
 			leaveStatsRepo.saveAll(leaveStats);
-		};
+		}
 		return true;
 	}
 
