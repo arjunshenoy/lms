@@ -27,7 +27,7 @@ public interface ILeaveService {
 
 	public String autoApproval(Leave leaveRequest) ;
 
-	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws LeaveServiceException;
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws ResourceNotFoundException, LeaveServiceException;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
 	

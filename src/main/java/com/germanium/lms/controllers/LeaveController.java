@@ -68,7 +68,7 @@ public class LeaveController {
 	@DeleteMapping(value = "leaveType/{leaveId}")
 	public ResponseEntity<Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
 			throws ResourceNotFoundException {
-		log.getLogger().info("Delete request received for leave ID :" + leaveId);
+		log.getLogger().info(String.format("Delete request received for leave ID : %d", leaveId));
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
 	}

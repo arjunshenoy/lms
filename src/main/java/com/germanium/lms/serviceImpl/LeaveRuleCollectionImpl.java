@@ -11,7 +11,7 @@ import com.germanium.lms.service.iterator.Iterator;
 
 public class LeaveRuleCollectionImpl implements Collection {
 	
-	List<LeaveRules> leaveRuleList =new ArrayList<LeaveRules>();
+	List<LeaveRules> leaveRuleList =new ArrayList<>();
 	public LeaveRuleCollectionImpl(ILeaveRulesRepository leaveRulesRepo) {
 		List<LeaveRules> leaveRules = (List<LeaveRules>) leaveRulesRepo.findAll();
 		this.leaveRuleList = leaveRules;
