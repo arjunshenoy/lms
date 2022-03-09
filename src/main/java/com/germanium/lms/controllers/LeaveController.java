@@ -2,6 +2,8 @@ package com.germanium.lms.controllers;
 
 import java.util.List;
 import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.dto.LeaveRequestDto;
+import com.germanium.lms.model.dto.LeaveRulesDto;
 import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
@@ -34,6 +37,9 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
+	
+	@Autowired
+    private ModelMapper modelMapper;
 
 	Log log = Log.getInstance();
 
@@ -50,20 +56,24 @@ public class LeaveController {
 	}
 
 	@PostMapping("leaveType")
-	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRules leaveType) {
+	public ResponseEntity<LeaveRules> createLeaveRules(@Valid @RequestBody LeaveRulesDto leaveTypeDto) {
 		log.getLogger().info("Request for adding new leave received");
+		LeaveRules leaveType = modelMapper.map(leaveTypeDto, LeaveRules.class);
 		LeaveRules leaveTypeDetails = leaveService.createLeaveRules(leaveType);
 		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION).body(leaveTypeDetails);
 	}
 
 	@PutMapping("leaveType/{leaveId}")
-	public ResponseEntity<String> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
-			@Valid @RequestBody LeaveRules leaveRule) throws ResourceNotFoundException {
+	public ResponseEntity<?> updateLeaveRules(@PathVariable("leaveId") final Integer leaveTypeId,
+			@Valid @RequestBody LeaveRulesDto leaveRuleDto) throws Exception {
 		log.getLogger().info("Request for updating leave rules received");
+		LeaveRules leaveRule = modelMapper.map(leaveRuleDto, LeaveRules.class);
 		leaveService.updateLeaveRules(leaveTypeId, leaveRule);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body("Leave type Updated Successfully");
 	}
+
+
 
 	@DeleteMapping(value = "leaveType/{leaveId}")
 	public ResponseEntity<Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
