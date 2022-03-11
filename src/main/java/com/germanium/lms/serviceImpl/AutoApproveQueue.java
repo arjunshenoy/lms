@@ -14,7 +14,7 @@ import com.germanium.lms.service.decorator.IAutoApprove;
 
 public class AutoApproveQueue implements IAutoApprove {
 	
-	private final String QUEUE ="queue";
+	private static final String QUEUE ="queue";
 	@Value("${user.service.url}")
 	private String userService = "http://localhost:8081";
 

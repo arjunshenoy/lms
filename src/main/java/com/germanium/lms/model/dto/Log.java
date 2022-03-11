@@ -13,7 +13,7 @@ public class Log {
 	private Logger logger;
 	FileHandler handler;
 	private static Log instance = null;
-	public static String fileName = "log";
+	public static final  String fileName = "log";
 
 	@Bean
 	public static Log getInstance() {
