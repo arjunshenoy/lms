@@ -41,10 +41,11 @@ public class LeaveServiceImpl implements ILeaveService {
 	Logger logger = LoggerFactory.getLogger(LeaveServiceImpl.class);
 
 	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
-	private final String LEAVE_APPLICATION = "Leave Application by User Id : ";
-	private final String LEAVE_START_DATE = "Leave Start Date:";
-	private final String LEAVE_TYPE ="Leave type: ";
-	private final String LEAVE_END_DATE ="Leave End Date: ";
+	private static final  String LEAVE_APPLICATION = "Leave Application by User Id : ";
+	private static final  String LEAVE_START_DATE = "Leave Start Date:";
+	private static final  String LEAVE_TYPE ="Leave type: ";
+	private static final  String LEAVE_END_DATE ="Leave End Date: ";
+	private static final  String LEAVE_DETAILS ="Leave Details: ";
 
 	@Value("${user.service.url}")
 	private String userService;
@@ -194,7 +195,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveStatsRepo.save(leaveStats.get());
 
 		String content = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully \n"
-				+ "Leave Details: \n" + LEAVE_TYPE + leaveRequest.getLeaveId() + "\n " + LEAVE_START_DATE
+				+ LEAVE_DETAILS+" \n" + LEAVE_TYPE + leaveRequest.getLeaveId() + "\n " + LEAVE_START_DATE
 				+ leaveRequest.getFromDate() + "\n "+LEAVE_END_DATE + leaveRequest.getToDate();
 		String subject = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully";
 		sendMail(content, subject, leaveRequest.getEmployeeId());
@@ -250,7 +251,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 
 		String content = "Leave Application by User Id : " + optionalLeave.get().getEmployeeId() + "\n  Decision: "
-				+ leaveHistory.getLeaveStatus() + "\n Leave Details: \n" + LEAVE_TYPE
+				+ leaveHistory.getLeaveStatus() + "\n "+ LEAVE_DETAILS+"\n" + LEAVE_TYPE
 				+ optionalLeave.get().getLeaveId() + "\n" + LEAVE_START_DATE + optionalLeave.get().getFromDate()
 				+ "\n"+LEAVE_END_DATE + optionalLeave.get().getToDate();
 		String subject = "Leave Application Decision for Leave Request ID :" + optionalLeave.get().getLeaveRequestId();
@@ -284,7 +285,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			}
 
 			String content = "Leave Application cancelled successfully for User Id : "
-					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + "Leave Details: \n"
+					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + LEAVE_DETAILS+" \n"
 					+ LEAVE_TYPE + optionalLeaveHistory.get().getLeaveId() + "\n " + LEAVE_START_DATE
 					+ optionalLeaveHistory.get().getFromDate() + "\n" +LEAVE_END_DATE
 					+ optionalLeaveHistory.get().getToDate();
@@ -311,7 +312,7 @@ public class LeaveServiceImpl implements ILeaveService {
 				logger.info("Approved one pending leave");
 			}
 			String content = "Leave Application withdrawn successfully for User Id : "
-					+ optionalLeave.get().getEmployeeId() + "Leave Details: \n" + LEAVE_TYPE					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
+					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS+" \n" + LEAVE_TYPE					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
 					+ "\n "+LEAVE_END_DATE + optionalLeave.get().getToDate();
 			String subject = "Leave Application Cancelled for User Id : " + optionalLeave.get().getEmployeeId();
 			sendMail(content, subject, optionalLeave.get().getEmployeeId());
@@ -334,7 +335,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		activeLeaveRepo.deleteById(selectedLeave.getLeaveRequestId());
 		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
 		String content = "Leave Application approved successfully for User Id : " + selectedLeave.getEmployeeId()
-				+ "Leave Details: \n" + LEAVE_TYPE + selectedLeave.getLeaveId() + "\n " + LEAVE_START_DATE
+				+ LEAVE_DETAILS+" \n" + LEAVE_TYPE + selectedLeave.getLeaveId() + "\n " + LEAVE_START_DATE
 				+ selectedLeave.getFromDate() + "\n"+LEAVE_END_DATE + selectedLeave.getToDate();
 		String subject = "Leave Application Approved for User Id : " + selectedLeave.getEmployeeId();
 		sendMail(content, subject, selectedLeave.getEmployeeId());
