@@ -13,6 +13,8 @@ import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.service.decorator.IAutoApprove;
 
 public class AutoApproveQueue implements IAutoApprove {
+	
+	private static final String QUEUE ="queue";
 	@Value("${user.service.url}")
 	private String userService = "http://user-service:8081";
 
@@ -25,16 +27,16 @@ public class AutoApproveQueue implements IAutoApprove {
 
 		String result = "approve";
 		if (fromDate.before(currentDate)) {
-			result = "queue";
+			result = QUEUE;
 		} else {
 
 			long diffInMillies = Math.abs(currentDate.getTime() - fromDate.getTime());
 			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) + 1;
 
 			if (diff >= getQueueDays(depId))
-				result = "queue";
+				result = QUEUE;
 		}
-		if (result.equals("queue") && prev.equals("reject"))
+		if (result.equals(QUEUE) && prev.equals(QUEUE))
 			return result;
 		return prev;
 
@@ -42,7 +44,7 @@ public class AutoApproveQueue implements IAutoApprove {
 
 	public float getQueueDays(int depId) {
 		RestTemplate restTemplate = new RestTemplate();
-		String resourceUrl = userService + "/api/v1/department/" + String.valueOf(depId) + "/leavequeue";
+		String resourceUrl = userService + "/api/v1/department/" +depId + "/leavequeue";
 		ResponseEntity<Integer> response = restTemplate.getForEntity(resourceUrl, Integer.class);
 		return response.getBody();
 	}
