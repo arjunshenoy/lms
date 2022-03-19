@@ -34,4 +34,6 @@ public interface ILeaveService {
 	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws LeaveServiceException;
 	
 	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
+	
+	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
 }

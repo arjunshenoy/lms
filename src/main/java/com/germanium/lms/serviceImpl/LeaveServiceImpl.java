@@ -20,6 +20,7 @@ import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveHistory;
+import com.germanium.lms.model.LeaveHistoryId;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
@@ -32,6 +33,8 @@ import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
 import com.germanium.lms.service.iterator.Iterator;
+import com.germanium.lms.service.memento.LeaveMemento;
+import com.germanium.lms.service.memento.LeaveMementoCareTaker;
 import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
 
@@ -41,11 +44,11 @@ public class LeaveServiceImpl implements ILeaveService {
 	Logger logger = LoggerFactory.getLogger(LeaveServiceImpl.class);
 
 	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
-	private static final  String LEAVE_APPLICATION = "Leave Application by User Id : ";
-	private static final  String LEAVE_START_DATE = "Leave Start Date:";
-	private static final  String LEAVE_TYPE ="Leave type: ";
-	private static final  String LEAVE_END_DATE ="Leave End Date: ";
-	private static final  String LEAVE_DETAILS ="Leave Details: ";
+	private static final String LEAVE_APPLICATION = "Leave Application by User Id : ";
+	private static final String LEAVE_START_DATE = "Leave Start Date:";
+	private static final String LEAVE_TYPE = "Leave type: ";
+	private static final String LEAVE_END_DATE = "Leave End Date: ";
+	private static final String LEAVE_DETAILS = "Leave Details: ";
 
 	@Value("${user.service.url}")
 	private String userService;
@@ -169,7 +172,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Override
 	@Transactional
-	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws ResourceNotFoundException, LeaveServiceException {
+	public ActiveLeaves createLeaveRequest(Leave leaveRequest) {
 		LeaveStatsId statsId = new LeaveStatsId();
 		statsId.setEmployeeId(leaveRequest.getEmployeeId());
 		statsId.setLeaveId(leaveRequest.getLeaveId());
@@ -194,9 +197,9 @@ public class LeaveServiceImpl implements ILeaveService {
 		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
 		leaveStatsRepo.save(leaveStats.get());
 
-		String content = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully \n"
-				+ LEAVE_DETAILS+" \n" + LEAVE_TYPE + leaveRequest.getLeaveId() + "\n " + LEAVE_START_DATE
-				+ leaveRequest.getFromDate() + "\n "+LEAVE_END_DATE + leaveRequest.getToDate();
+		String content = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully \n" + LEAVE_DETAILS
+				+ " \n" + LEAVE_TYPE + leaveRequest.getLeaveId() + "\n " + LEAVE_START_DATE + leaveRequest.getFromDate()
+				+ "\n " + LEAVE_END_DATE + leaveRequest.getToDate();
 		String subject = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully";
 		sendMail(content, subject, leaveRequest.getEmployeeId());
 		return savedLeave;
@@ -229,31 +232,41 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
-
-		// Finding approved leaves ending with date of yesterday
-		LeaveHistory alreadyExistingLeaveHistory = leaveHistoryRepo
-				.findByFromDateAndIsApproved(DateUtils.addDays(leaveHistory.getFromDate(), -1), "APPROVED");
-		if (alreadyExistingLeaveHistory != null) {
-			Optional<LeaveRules> existingLeaveRule = leaveRulesRepo.findById(alreadyExistingLeaveHistory.getLeaveId());
-			if (existingLeaveRule.isEmpty())
-				throw new ResourceNotFoundException("Leave rules not exist for leave ID : " + leaveRequestId);
-			//Finding leave rules for the applied leave
-			Optional<LeaveRules> appliedLeave = leaveRulesRepo.findById(optionalLeave.get().getLeaveId());
-			if (!existingLeaveRule.get().getCombinableLeaves().contains(appliedLeave.get().getName())) {
-				logger.warn("Leaves {} and {} can not be combined.", existingLeaveRule.get().getName(), appliedLeave.get().getName());
-				return setDecision(leaveHistory, optionalLeave, leaveRequestId, "REJECTED");
-			} else {
-				return setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+		Boolean response = false;
+		try {
+			// Finding approved leaves ending with date of yesterday
+			LeaveHistory alreadyExistingLeaveHistory = leaveHistoryRepo
+					.findByFromDateAndIsApproved(DateUtils.addDays(leaveHistory.getFromDate(), -1), "APPROVED");
+			if (alreadyExistingLeaveHistory != null) {
+				Optional<LeaveRules> existingLeaveRule = leaveRulesRepo
+						.findById(alreadyExistingLeaveHistory.getLeaveId());
+				if (existingLeaveRule.isEmpty())
+					throw new ResourceNotFoundException("Leave rules not exist for leave ID : " + leaveRequestId);
+				// Finding leave rules for the applied leave
+				Optional<LeaveRules> appliedLeave = leaveRulesRepo.findById(optionalLeave.get().getLeaveId());
+				if (!existingLeaveRule.get().getCombinableLeaves().contains(appliedLeave.get().getName())) {
+					logger.warn("Leaves {} and {} can not be combined.", existingLeaveRule.get().getName(),
+							appliedLeave.get().getName());
+					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, "REJECTED");
+				} else {
+					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+				}
 			}
+			response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+		} catch (Exception e) {
+			logger.error(e.toString());
 		}
-		return setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
+		return response;
 	}
 
-	private Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId, String decision) throws Exception {
+	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
+			String decision) throws Exception {
 		if (decision.equals("approve")) {
 			leaveHistory.setLeaveStatus("APPROVED");
+			optionalLeave.get().setLeaveStatus("APPROVED");
 		} else {
 			leaveHistory.setLeaveStatus("REJECTED");
+			optionalLeave.get().setLeaveStatus("REJECTED");
 		}
 
 		LeaveHistory savedHistory = leaveHistoryRepo.save(leaveHistory);
@@ -270,10 +283,14 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeave.get().getEmployeeId(), optionalLeave.get().getLeaveId());
 		}
 
+		/* Memento Design Pattern Start */
+		LeaveMementoCareTaker.addMemento(optionalLeave.get(), decision);
+		/* Memento Design Pattern End */
+
 		String content = "Leave Application by User Id : " + optionalLeave.get().getEmployeeId() + "\n  Decision: "
-				+ leaveHistory.getLeaveStatus() + "\n "+ LEAVE_DETAILS+"\n" + LEAVE_TYPE
-				+ optionalLeave.get().getLeaveId() + "\n" + LEAVE_START_DATE + optionalLeave.get().getFromDate()
-				+ "\n"+LEAVE_END_DATE + optionalLeave.get().getToDate();
+				+ leaveHistory.getLeaveStatus() + "\n " + LEAVE_DETAILS + "\n" + LEAVE_TYPE
+				+ optionalLeave.get().getLeaveId() + "\n" + LEAVE_START_DATE + optionalLeave.get().getFromDate() + "\n"
+				+ LEAVE_END_DATE + optionalLeave.get().getToDate();
 		String subject = "Leave Application Decision for Leave Request ID :" + optionalLeave.get().getLeaveRequestId();
 		sendMail(content, subject, optionalLeave.get().getEmployeeId());
 
@@ -305,9 +322,9 @@ public class LeaveServiceImpl implements ILeaveService {
 			}
 
 			String content = "Leave Application cancelled successfully for User Id : "
-					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + LEAVE_DETAILS+" \n"
+					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + LEAVE_DETAILS + " \n"
 					+ LEAVE_TYPE + optionalLeaveHistory.get().getLeaveId() + "\n " + LEAVE_START_DATE
-					+ optionalLeaveHistory.get().getFromDate() + "\n" +LEAVE_END_DATE
+					+ optionalLeaveHistory.get().getFromDate() + "\n" + LEAVE_END_DATE
 					+ optionalLeaveHistory.get().getToDate();
 			String subject = "Leave Application Cancelled for User Id : "
 					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
@@ -332,8 +349,9 @@ public class LeaveServiceImpl implements ILeaveService {
 				logger.info("Approved one pending leave");
 			}
 			String content = "Leave Application withdrawn successfully for User Id : "
-					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS+" \n" + LEAVE_TYPE					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
-					+ "\n "+LEAVE_END_DATE + optionalLeave.get().getToDate();
+					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS + " \n" + LEAVE_TYPE
+					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
+					+ "\n " + LEAVE_END_DATE + optionalLeave.get().getToDate();
 			String subject = "Leave Application Cancelled for User Id : " + optionalLeave.get().getEmployeeId();
 			sendMail(content, subject, optionalLeave.get().getEmployeeId());
 
@@ -355,8 +373,8 @@ public class LeaveServiceImpl implements ILeaveService {
 		activeLeaveRepo.deleteById(selectedLeave.getLeaveRequestId());
 		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
 		String content = "Leave Application approved successfully for User Id : " + selectedLeave.getEmployeeId()
-				+ LEAVE_DETAILS+" \n" + LEAVE_TYPE + selectedLeave.getLeaveId() + "\n " + LEAVE_START_DATE
-				+ selectedLeave.getFromDate() + "\n"+LEAVE_END_DATE + selectedLeave.getToDate();
+				+ LEAVE_DETAILS + " \n" + LEAVE_TYPE + selectedLeave.getLeaveId() + "\n " + LEAVE_START_DATE
+				+ selectedLeave.getFromDate() + "\n" + LEAVE_END_DATE + selectedLeave.getToDate();
 		String subject = "Leave Application Approved for User Id : " + selectedLeave.getEmployeeId();
 		sendMail(content, subject, selectedLeave.getEmployeeId());
 		return true;
@@ -375,6 +393,32 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		leaveStats.get().setLeaveCount(leaveStats.get().getLeaveCount() + diff);
 		leaveStatsRepo.save(leaveStats.get());
+		return true;
+	}
+
+	public Boolean undoLeaveDecision(Integer leaveRequestId) throws Exception {
+
+		LeaveMemento leaveSnapShot = LeaveMementoCareTaker.getMemento(leaveRequestId);
+		if(leaveSnapShot.getLeaveStatus().equalsIgnoreCase("APPROVED")) {
+			//Undo Approval
+			return cancelWithdrawLeave(leaveRequestId, "Cancel");
+		}
+		else {
+			Optional<LeaveHistory> optionalLeaveHistory = leaveHistoryRepo
+					.findByLeaveHistoryIdLeaveRequestId(leaveRequestId);
+			if (!optionalLeaveHistory.isPresent()) {
+				logger.error("No data found in Leave History table for Leave Request Id {}", leaveRequestId);
+				throw new ResourceNotFoundException(
+						"No data found in Leave History table for Leave Request Id " + leaveRequestId);
+			}		
+			
+			optionalLeaveHistory.get().setLeaveStatus("APPROVED");
+			leaveHistoryRepo.save(optionalLeaveHistory.get());
+		}
+		
+		
+		
+		
 		return true;
 	}
 }

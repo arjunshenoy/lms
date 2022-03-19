@@ -16,7 +16,7 @@ public class AutoApproveQueue implements IAutoApprove {
 	
 	private static final String QUEUE ="queue";
 	@Value("${user.service.url}")
-	private String userService = "http://user-service:8081";
+	private String userService = "http://localhost:8081";
 
 	@Override
 	public String checkApprovalRule(Leave leaveRequest, String prev) {

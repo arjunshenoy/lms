@@ -132,5 +132,15 @@ public class LeaveController {
 		}
 
 	}
+	
+	@PostMapping("undo-decision/{leaveRequestId}")
+	public ResponseEntity<Boolean> undoLeaveDecision(@PathVariable("leaveRequestId") Integer leaveRequestId) {
+		try {
+			return ResponseEntity.ok().body(leaveService.undoLeaveDecision(leaveRequestId));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(false);
+		}
+
+	}
 
 }
