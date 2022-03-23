@@ -40,13 +40,12 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
-	
+
 	@Autowired
     private ModelMapper modelMapper;
 	
 	@Autowired
 	AutoApproveInvoker invoker;
-	
 
 	Log log = Log.getInstance();
 
@@ -58,7 +57,7 @@ public class LeaveController {
 
 	@GetMapping("leaveType/{leaveId}")
 	public ResponseEntity<LeaveRules> getLeavesById(@PathVariable("leaveId") Integer leaveId) {
-		log.logger.info(String.format("Request for fetching leaves for ID %d received", leaveId));
+		log.logger.info("Request for fetching leaves for ID: " + leaveId +"received");
 		return ResponseEntity.ok().body(leaveService.findLeavesById(leaveId));
 	}
 
@@ -80,19 +79,17 @@ public class LeaveController {
 				.body("Leave type Updated Successfully");
 	}
 
-
-
 	@DeleteMapping(value = "leaveType/{leaveId}")
 	public ResponseEntity<Boolean> deleteLeaveRules(@PathVariable("leaveId") Integer leaveId)
 			throws ResourceNotFoundException {
-		log.logger.info(String.format("Delete request received for leave ID : %d", leaveId));
+		log.logger.info("Delete request received for leave ID : "+ leaveId);
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION)
 				.body(leaveService.deleteLeaveRules(leaveId));
 	}
 
 	@GetMapping("leaveStats/{employeeId}")
 	public ResponseEntity<List<LeaveStats>> getLeaveStatsById(@PathVariable("employeeId") Integer employeeId) {
-		log.logger.info(String.format("Fetching Leave Stats details for employee ID %s" , employeeId));
+		log.logger.info("Fetching Leave Stats details for employee ID: " + employeeId);
 		return ResponseEntity.ok().body(leaveService.getLeaveStatsById(employeeId));
 	}
 
@@ -127,7 +124,7 @@ public class LeaveController {
 
 	@GetMapping("request/{leaveId}")
 	public ResponseEntity<ActiveLeaves> getActiveLeavesById(@PathVariable Integer leaveId) {
-		log.logger.info(String.format("Finding active leaves for leave ID %d", leaveId));
+		log.logger.info("Finding active leaves for leave ID :" + leaveId);
 		return ResponseEntity.ok().body(leaveService.getActiveLeavesById(leaveId));
 	}
 
@@ -145,7 +142,7 @@ public class LeaveController {
 	@PostMapping("cancelRequest/{leaveRequestId}/{cancelDecision}")
 	public ResponseEntity<Boolean> cancelWithdrawLeave(@PathVariable("leaveRequestId") Integer leaveRequestId,
 			@PathVariable("cancelDecision") String cancelDecision) {
-		log.logger.info(String.format("Request received for %s leave", cancelDecision));
+		log.logger.info("Request received for "+cancelDecision+" leave");
 		try {
 			return ResponseEntity.ok().body(leaveService.cancelWithdrawLeave(leaveRequestId, cancelDecision));
 		} catch (Exception e) {
@@ -153,7 +150,7 @@ public class LeaveController {
 		}
 
 	}
-	
+
 	@PostMapping("undo-decision/{leaveRequestId}")
 	public ResponseEntity<Boolean> undoLeaveDecision(@PathVariable("leaveRequestId") Integer leaveRequestId) {
 		try {
@@ -161,7 +158,15 @@ public class LeaveController {
 		} catch (Exception e) {
 			return ResponseEntity.ok().body(false);
 		}
-
 	}
 
+	@PostMapping("getsummary/{type}/{employeeId}")
+	public ResponseEntity<String> getSummary(@PathVariable("employeeId") int employeeId, @PathVariable("type") String type) {
+		try {
+			return ResponseEntity.ok().body(leaveService.getSummary(employeeId, type));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body("Error");
+		}
+
+	}
 }

@@ -14,4 +14,6 @@ public interface IActiveLeaveRepository extends CrudRepository<ActiveLeaves, Int
 	@Query("SELECT activeLeaves FROM ActiveLeaves activeLeaves WHERE activeLeaves.fromDate >= :fromDate AND activeLeaves.toDate <= :toDate"
 			+ " AND activeLeaves.departmentId = :id ORDER BY activeLeaves.dateOfApplication ASC")
 	List<ActiveLeaves> findByFromDateAndToDateAndDepartmentId(@Param("fromDate") Date fromDate, @Param("toDate") Date toDate, @Param("id") int departmentId);
+
+	List<ActiveLeaves> findByEmployeeId(int employeeId);
 }
