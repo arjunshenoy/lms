@@ -9,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -375,13 +373,23 @@ public class LeaveServiceTest {
 		leaveHistoryId.setLeaveRequestId(10);
 		leaveHistoryId.setEmployeeId(1);
 		leaveHistoryId.setDateOfApplication((format.parse("2021/05/10")));
-		LeaveHistory history = new LeaveHistory();
-		history.setDecisionDate((format.parse("2021/05/10")));
-		history.setFromDate((format.parse("2021/05/11")));
-		history.setToDate((format.parse("2021/05/11")));
-		history.setDepartmentId(1);
-		history.setLeaveId(1);
-		history.setLeaveHistoryId(leaveHistoryId);
+		/*
+		 * LeaveHistory history = new LeaveHistory(null);
+		 * history.setDecisionDate((format.parse("2021/05/10")));
+		 * history.setFromDate((format.parse("2021/05/11")));
+		 * history.setToDate((format.parse("2021/05/11"))); history.setDepartmentId(1);
+		 * history.setLeaveId(1); history.setLeaveHistoryId(leaveHistoryId);
+		 */
+		
+		LeaveHistory history = LeaveHistory.builder().
+				decisionDate(format.parse("2021/05/10"))
+				.fromDate(format.parse("2021/05/11"))
+				.toDate(format.parse("2021/05/11"))
+				.departmentId(1)
+				.leaveId(1)
+				.leaveHistoryId(leaveHistoryId)
+				.build();
+				
 		return history;
 	}
 }
