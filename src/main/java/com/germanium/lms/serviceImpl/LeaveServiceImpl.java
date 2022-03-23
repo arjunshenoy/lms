@@ -67,7 +67,9 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveRuleService leaveRuleService;
-
+	
+	IAutoApprove autoApproval =  new AutoApproveCache();  
+	
 	@Override
 	public List<LeaveRules> getLeaveRules() {
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
@@ -108,7 +110,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 		}
 		return savedRule;
-
 	}
 
 	@Override
@@ -158,12 +159,23 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
 	}
-
+	
+	@Override
+	public void enableAutoApproval() {				
+		// decorate/chain with each rule
+		 autoApproval = new AutoApproveByEmployeeNumber(
+				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
+		
+	}
+	
+	@Override
+	public void disableAutoApproval() {				
+			autoApproval = new AutoApproveCache();
+			
+	}
+	
 	@Override
 	public String autoApproval(Leave leaveRequest) {
-		// decorate/chain with each rule
-		IAutoApprove autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo);
 		return autoApproval.checkApprovalRule(leaveRequest, "approve");
 	}
 

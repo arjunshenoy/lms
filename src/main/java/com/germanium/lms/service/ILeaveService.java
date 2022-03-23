@@ -25,8 +25,6 @@ public interface ILeaveService {
 
 	public List<LeaveStats> getLeaveStatsById(Integer employeeId);
 
-	public String autoApproval(Leave leaveRequest) ;
-
 	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws ResourceNotFoundException, LeaveServiceException;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
@@ -34,4 +32,10 @@ public interface ILeaveService {
 	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws LeaveServiceException;
 	
 	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
+
+	public void enableAutoApproval();
+
+	public void disableAutoApproval();
+
+	public String autoApproval(Leave leaveRequest);
 }
