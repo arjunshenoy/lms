@@ -21,4 +21,6 @@ public interface ILeaveHistoryRepository extends CrudRepository<LeaveHistory, Le
 	@Query("SELECT leave FROM LeaveHistory leave WHERE :date >= leave.fromDate and :date <= leave.toDate")
 	List<LeaveHistory> findClashingLeaves(@Param("date") Date checkDate);
 
+	@Query("SELECT leaveHistory FROM LeaveHistory leaveHistory where leaveHistory.fromDate = :fromDate AND leaveHistory.leaveStatus = :status")
+	LeaveHistory findByFromDateAndIsApproved(@Param("fromDate") Date fromDate, @Param("status") String leaveStatus);
 }

@@ -17,6 +17,22 @@ public class LeaveHelper {
 		leaveHistoryId.setEmployeeId(activeLeave.getEmployeeId());
 		leaveHistoryId.setDateOfApplication(activeLeave.getDateOfApplication());
 
+		LeaveHistory leaveHistory = LeaveHistory.builder()
+				.leaveHistoryId(leaveHistoryId)
+				.comments(activeLeave.getComments())
+				.decisionDate(new Date())
+				.departmentId(activeLeave.getDepartmentId())
+				.fromDate(activeLeave.getFromDate())
+				.leaveId(activeLeave.getLeaveId())
+				.reason(activeLeave.getReason())
+				.toDate(activeLeave.getToDate())
+				.comments(activeLeave.getComments())
+				.build();
+		
+		return leaveHistory;
+		
+		/*
+		 * This code was using the normal getters and setters
 		LeaveHistory leaveHistory = new LeaveHistory();
 		leaveHistory.setLeaveHistoryId(leaveHistoryId);
 		leaveHistory.setComments(activeLeave.getComments());
@@ -29,6 +45,7 @@ public class LeaveHelper {
 		leaveHistory.setToDate(activeLeave.getToDate());
 		leaveHistory.setComments(activeLeave.getComments());
 		return leaveHistory;
+		*/
 
 	}
 

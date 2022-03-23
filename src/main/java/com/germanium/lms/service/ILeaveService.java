@@ -38,4 +38,7 @@ public interface ILeaveService {
 	public void disableAutoApproval();
 
 	public String autoApproval(Leave leaveRequest);
+	
+	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
+
 }
