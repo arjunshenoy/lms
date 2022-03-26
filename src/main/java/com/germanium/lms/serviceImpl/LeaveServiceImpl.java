@@ -35,6 +35,7 @@ import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
 
+
 @Service
 public class LeaveServiceImpl implements ILeaveService {
 
@@ -67,6 +68,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveRuleService leaveRuleService;
+
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -312,7 +314,7 @@ public class LeaveServiceImpl implements ILeaveService {
 				logger.info("Approved one pending leave");
 			}
 			String content = "Leave Application withdrawn successfully for User Id : "
-					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS+" \n" + LEAVE_TYPE					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
+					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS+" \n" + LEAVE_TYPE+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
 					+ "\n "+LEAVE_END_DATE + optionalLeave.get().getToDate();
 			String subject = "Leave Application Cancelled for User Id : " + optionalLeave.get().getEmployeeId();
 			sendMail(content, subject, optionalLeave.get().getEmployeeId());
