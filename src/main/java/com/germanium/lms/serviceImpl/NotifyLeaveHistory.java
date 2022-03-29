@@ -24,9 +24,9 @@ public class NotifyLeaveHistory extends Notifier {
 		String content = "Leave Application Request by " + id;
 		content += " is " + this.status+ "\n\n";
 		content += "Details :\n";
-		content += "Leave type :"+ optionalLeave!=null ? optionalLeave.get().getLeaveId() : optionalLeaveHistory.get().getLeaveId() + "\n";
-		content += "Leave Starts on :"+ optionalLeave!=null ? optionalLeave.get().getFromDate() : optionalLeaveHistory.get().getFromDate()+"\n";
-		content += "Leave Ends on :"+optionalLeave!=null ? optionalLeave.get().getToDate() : optionalLeaveHistory.get().getToDate()+"\n";
+		content += "Leave type :"+ ((optionalLeave!=null) ? optionalLeave.get().getLeaveId() : optionalLeaveHistory.get().getLeaveId()) + "\n";
+		content += "Leave Starts on :"+ ((optionalLeave!=null) ? optionalLeave.get().getFromDate() : optionalLeaveHistory.get().getFromDate())+"\n";
+		content += "Leave Ends on :"+((optionalLeave!=null) ? optionalLeave.get().getToDate() : optionalLeaveHistory.get().getToDate())+"\n";
 		return content;
 	}
 }

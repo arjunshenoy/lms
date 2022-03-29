@@ -304,11 +304,6 @@ public class LeaveServiceImpl implements ILeaveService {
 				logger.info("Approved one pending leave");
 			}
 
-			String content = "Leave Application cancelled successfully for User Id : "
-					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + LEAVE_DETAILS + " \n"
-					+ LEAVE_TYPE + optionalLeaveHistory.get().getLeaveId() + "\n " + LEAVE_START_DATE
-					+ optionalLeaveHistory.get().getFromDate() + "\n" + LEAVE_END_DATE
-					+ optionalLeaveHistory.get().getToDate();
 			int id = optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : "+ id;
 			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT), null, optionalLeaveHistory, "cancelled")).send();
