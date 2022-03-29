@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -284,7 +285,9 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 
 		/* Memento Design Pattern Start */
-		LeaveMementoCareTaker.addMemento(optionalLeave.get(), decision);
+		LeaveMementoCareTaker leaveMementoCareTaker = new LeaveMementoCareTaker();
+
+		leaveMementoCareTaker.addMementoToCache(optionalLeave.get(), decision);
 		/* Memento Design Pattern End */
 
 		String content = "Leave Application by User Id : " + optionalLeave.get().getEmployeeId() + "\n  Decision: "
@@ -397,8 +400,9 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	public Boolean undoLeaveDecision(Integer leaveRequestId) throws Exception {
+		LeaveMementoCareTaker leaveMementoCareTaker = new LeaveMementoCareTaker();
 
-		LeaveMemento leaveSnapShot = LeaveMementoCareTaker.getMemento(leaveRequestId);
+		LeaveMemento leaveSnapShot = leaveMementoCareTaker.restoreMemento(leaveRequestId);
 		if(leaveSnapShot.getLeaveStatus().equalsIgnoreCase("APPROVED")) {
 			//Undo Approval
 			return cancelWithdrawLeave(leaveRequestId, "Cancel");
@@ -420,5 +424,10 @@ public class LeaveServiceImpl implements ILeaveService {
 		
 		
 		return true;
+	}
+	
+	@Scheduled(cron = "0 */2 * ? * *")
+	public void print() {
+		System.out.println(" Cron called");
 	}
 }
