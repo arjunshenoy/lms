@@ -198,7 +198,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveStatsRepo.save(leaveStats.get());
 
 		String subject = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully";
-		(new NotifyLeaveRequest(subject, new Mailer(leaveRequest.getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT), leaveRequest)).send();
+		(new NotifyLeaveRequest(subject, new Mailer(leaveRequest.getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), leaveRequest)).send();
 		return savedLeave;
 	}
 
@@ -276,7 +276,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		/* Memento Design Pattern End */
 
 		String subject = "Leave Application Decision for Leave Request ID :" + optionalLeave.get().getLeaveRequestId();
-		(new NotifyLeaveHistory(subject, new Mailer(optionalLeave.get().getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT), optionalLeave, null, leaveHistory.getLeaveStatus())).send();
+		(new NotifyLeaveHistory(subject, new Mailer(optionalLeave.get().getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, leaveHistory.getLeaveStatus())).send();
 		return true;
 
 	}
@@ -306,7 +306,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 			int id = optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : "+ id;
-			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT), null, optionalLeaveHistory, "cancelled")).send();
+			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), null, optionalLeaveHistory, "cancelled")).send();
 		}
 		if (cancelDecision.equalsIgnoreCase("Withdraw")) {
 			Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveRequestId);
@@ -328,7 +328,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			}
 			int id = optionalLeave.get().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : " + id;
-			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT), optionalLeave, null, "withdrawn")).send();
+			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, "withdrawn")).send();
 
 		}
 		return true;
@@ -349,7 +349,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
 		int id = selectedLeave.getEmployeeId();
 		String subject = "Leave Application Approved for User Id : " + id;
-		(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT), Optional.of(selectedLeave), null, "approved")).send();
+		(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), Optional.of(selectedLeave), null, "approved")).send();
 		return true;
 	}
 
