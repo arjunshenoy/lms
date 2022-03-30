@@ -29,6 +29,10 @@ import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.serviceImpl.AutoApproveInvoker;
+import com.germanium.lms.serviceImpl.LeaveServiceImpl;
+import com.germanium.lms.serviceImpl.TurnOffAutoApproveCommand;
+import com.germanium.lms.serviceImpl.TurnOnAutoApproveCommand;
 
 @RestController
 @RequestMapping(value = "/api/v1/leave", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,6 +43,10 @@ public class LeaveController {
 	
 	@Autowired
     private ModelMapper modelMapper;
+	
+	@Autowired
+	AutoApproveInvoker invoker;
+	
 
 	Log log = Log.getInstance();
 
@@ -92,6 +100,19 @@ public class LeaveController {
 	public ResponseEntity<Boolean> addLeaveStatsForNewUsers(@PathVariable("userId") final Integer userId) {
 		log.logger.info("Adding leave stats for new Users");
 		return ResponseEntity.status(HttpStatus.OK).body(leaveService.addLeaveStatsForNewUsers(userId));
+	}
+	
+	@GetMapping("enableDisableAutoApprove/{button}")
+	public void enableDisableAutoApprove(@PathVariable("button") String button){
+		
+	    if (button.equalsIgnoreCase("on")) {
+	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveService));
+	 	    invoker.buttonPressed();
+	    }
+	    if (button.equalsIgnoreCase("off")) {
+	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveService));
+		    invoker.buttonPressed();
+	    }
 	}
 
 	@PostMapping("request")
