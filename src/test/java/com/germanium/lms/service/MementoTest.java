@@ -63,7 +63,8 @@ public class MementoTest {
 		LeaveHistory leaveHistory = getLeaveHistory();
 		Optional<ActiveLeaves> optionalActiveLeave = Optional.of(getActiveLeave());
 		when(leaveHistoryRepo.save(isA(LeaveHistory.class))).thenReturn(leaveHistory);
-		LeaveMemento leaveMemento = LeaveMementoCareTaker.getMemento(1);
+		LeaveMementoCareTaker caretaker  = new LeaveMementoCareTaker();
+		LeaveMemento leaveMemento = caretaker.restoreMemento(1);
 		//Boolean response = leaveService.se
 		assertNotNull(leaveMemento);
 	}

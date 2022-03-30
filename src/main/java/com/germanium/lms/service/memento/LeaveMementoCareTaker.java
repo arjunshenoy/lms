@@ -5,16 +5,16 @@ import java.util.Map;
 
 import com.germanium.lms.model.ActiveLeaves;
 
-public class LeaveMementoCareTaker {
+public class LeaveMementoCareTaker implements MementoCareTaker {
 
 	protected static Map<Integer, LeaveMemento> mementoHistory = new HashMap<Integer, LeaveMemento>();
 
-	public static LeaveMemento createNewActiveLeaveMemento(ActiveLeaves activeLeave) {
+	public LeaveMemento createNewActiveLeaveMemento(ActiveLeaves activeLeave) {
 
 		return activeLeave.createMemento();
 	}
 
-	public static void addMemento(ActiveLeaves activeLeave, String decision) {
+	public  void addMementoToCache(ActiveLeaves activeLeave, String decision) {
 		if (decision != null && decision.trim().length() != 0) {
 			LeaveMemento mementoMessageMap = mementoHistory.get(activeLeave.getLeaveRequestId());
 			if (mementoMessageMap == null) {
@@ -24,7 +24,7 @@ public class LeaveMementoCareTaker {
 
 	}
 
-	public static LeaveMemento getMemento(int leaveId) throws Exception {
+	public LeaveMemento restoreMemento(int leaveId) throws Exception {
 
 		LeaveMemento leaveMemento = null;
 		leaveMemento = mementoHistory.get(leaveId);
