@@ -232,7 +232,7 @@ public class LeaveServiceImpl implements ILeaveService {
 					throw new ResourceNotFoundException("Leave rules not exist for leave ID : " + leaveRequestId);
 				// Finding leave rules for the applied leave
 				Optional<LeaveRules> appliedLeave = leaveRulesRepo.findById(optionalLeave.get().getLeaveId());
-				if (!existingLeaveRule.get().getCombinableLeaves().contains(appliedLeave.get().getName())) {
+				if (appliedLeave.isPresent() && !existingLeaveRule.get().getCombinableLeaves().contains(appliedLeave.get().getName())) {
 					logger.warn("Leaves {} and {} can not be combined.", existingLeaveRule.get().getName(),
 							appliedLeave.get().getName());
 					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, "REJECTED");
@@ -249,12 +249,14 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
-		if (decision.equals("approve")) {
-			leaveHistory.setLeaveStatus("APPROVED");
-			optionalLeave.get().setLeaveStatus("APPROVED");
-		} else {
-			leaveHistory.setLeaveStatus("REJECTED");
-			optionalLeave.get().setLeaveStatus("REJECTED");
+		if (optionalLeave.isPresent()) {
+			if (decision.equals("approve")) {
+				leaveHistory.setLeaveStatus("APPROVED");
+				optionalLeave.get().setLeaveStatus("APPROVED");
+			} else {
+				leaveHistory.setLeaveStatus("REJECTED");
+				optionalLeave.get().setLeaveStatus("REJECTED");
+			}
 		}
 
 		LeaveHistory savedHistory = leaveHistoryRepo.save(leaveHistory);
