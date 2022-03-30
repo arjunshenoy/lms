@@ -20,12 +20,7 @@ public class NotifyLeaveHistory extends Notifier {
     
     
 	public String buildMsg() {
-		if (optionalLeave!=null && optionalLeave.isEmpty()) {
-			return "";
-		}
-		else if (optionalLeave==null && optionalLeaveHistory.isEmpty()) {
-			return "";
-		}
+		assert((optionalLeave!=null && optionalLeave.isPresent()) || (optionalLeaveHistory!=null && optionalLeaveHistory.isPresent()));
 		int id = optionalLeave!=null ? optionalLeave.get().getEmployeeId() : optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
 		String content = "Leave Application Request by " + id;
 		content += " is " + this.status+ "\n\n";
