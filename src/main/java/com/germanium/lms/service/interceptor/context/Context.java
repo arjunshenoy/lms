@@ -32,7 +32,6 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 		try {
 			o = accessibles.get(key).get(interceptibleFramework);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		}
 		return o;
 	}
@@ -45,7 +44,6 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 		try {
 			mutables.get(key).set(interceptibleFramework, value);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		}
 	}
 

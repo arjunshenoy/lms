@@ -37,7 +37,6 @@ public class InterceptibleFramework {
         try {
             registry = LocateRegistry.createRegistry(1099);
         } catch(RemoteException e) {
-            e.printStackTrace();
         }
 
         for(Method method : this.getClass().getDeclaredMethods()) {
