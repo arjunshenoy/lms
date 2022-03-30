@@ -15,7 +15,7 @@ public class LeaveMementoCareTaker implements MementoCareTaker {
 	}
 
 	public  void addMementoToCache(ActiveLeaves activeLeave, String decision) {
-		if (decision != null && decision.trim().length() != 0 && decision != null) {
+		if (decision != null && decision.trim().length() != 0) {
 			LeaveMemento mementoMessageMap = mementoHistory.get(activeLeave.getLeaveRequestId());
 			if (mementoMessageMap == null) {
 				mementoHistory.put(activeLeave.getLeaveRequestId(), createNewActiveLeaveMemento(activeLeave));
