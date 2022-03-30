@@ -25,7 +25,6 @@ import com.germanium.lms.model.LeaveHistoryId;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
-import com.germanium.lms.model.dto.MailRequestDto;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -46,10 +45,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
 	private static final String LEAVE_APPLICATION = "Leave Application by User Id : ";
-	private static final String LEAVE_START_DATE = "Leave Start Date:";
-	private static final String LEAVE_TYPE = "Leave type: ";
-	private static final String LEAVE_END_DATE = "Leave End Date: ";
-	private static final String LEAVE_DETAILS = "Leave Details: ";
 
 	@Value("${user.service.url}")
 	private String userService;
