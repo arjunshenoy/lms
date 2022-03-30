@@ -67,14 +67,11 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
-<<<<<<< HEAD
 	IAutoApprove autoApproval =  new AutoApproveCache();  
-	
-=======
+
 	@Autowired
 	ITarget target;
 
->>>>>>> 9924665 (Pluggable adapter)
 	@Override
 	public List<LeaveRules> getLeaveRules() {
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
