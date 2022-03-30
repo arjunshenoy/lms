@@ -54,7 +54,6 @@ public class InterceptibleFramework {
                         // bind a dispatcher to the corresponding event name in the register
                         registry.rebind(interceptible.event(), dispatcher);
                     } catch(Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -74,21 +73,34 @@ public class InterceptibleFramework {
      *
      */
     Context createContext(String event) throws RemoteException {
-        System.out.println("Creating a context on event " + event);
+        //System.out.println("Creating a context on event " + event);
         Context context = new Context(this);
-
-        // look for fields that are associated with the event
+        setAccessibles(context, event);
+        setMutables(context, event);
+        return context;
+    }
+    
+    void setAccessibles(Context context, String event) {
+    	// look for fields that are associated with the event
         for(Field field : this.getClass().getDeclaredFields()) {
             Annotation[] annotations = field.getDeclaredAnnotations();
             for(Annotation annotation : annotations) {
                 if(annotation instanceof Accessible) {
                     Accessible accessible = (Accessible) annotation;
-                    //if(accessible.event().equals(event)) {
                     if(Arrays.asList(accessible.event()).contains(event)) {
                         field.setAccessible(true);
                         context.putAccessible(field.getName(), field);
                     }
                 }
+            }
+        } // end outer for
+    }
+    
+    void setMutables(Context context, String event) {
+    	// look for fields that are associated with the event
+        for(Field field : this.getClass().getDeclaredFields()) {
+            Annotation[] annotations = field.getDeclaredAnnotations();
+            for(Annotation annotation : annotations) {
                 if(annotation instanceof Mutable) {
                     Mutable accessible = (Mutable) annotation;
                     if(Arrays.asList(accessible.event()).contains(event)) {
@@ -98,7 +110,6 @@ public class InterceptibleFramework {
                 }
             }
         } // end outer for
-        return context;
     }
 
     /**
@@ -106,7 +117,7 @@ public class InterceptibleFramework {
      *
      *     */
     void invokeDispatcher(String event, Context context) {
-        System.out.println("Invoking dispatcher " + event);
+        //System.out.println("Invoking dispatcher " + event);
         dispatchers.get(event).dispatch(context);
     }
 }
