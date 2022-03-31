@@ -7,6 +7,7 @@ import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.dto.Manager;
 import com.germanium.lms.model.factory.Leave;
 
 public interface ILeaveService {
@@ -42,4 +43,6 @@ public interface ILeaveService {
 	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
 
 	public String getSummary(Integer employeeId, String type);
+	
+	public List<Manager> getManagers(String departmentName);
 }

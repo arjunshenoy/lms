@@ -1,5 +1,6 @@
 package com.germanium.lms.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -166,6 +167,16 @@ public class LeaveController {
 			return ResponseEntity.ok().body(leaveService.getSummary(employeeId, type));
 		} catch (Exception e) {
 			return ResponseEntity.ok().body("Error");
+		}
+
+	}
+	
+	@PostMapping("getmanager/{departmentName}")
+	public ResponseEntity<List<?>> getManagers(@PathVariable("departmentName") String departmentName) {
+		try {
+			return ResponseEntity.ok().body(leaveService.getManagers(departmentName));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(new ArrayList<>());
 		}
 
 	}
