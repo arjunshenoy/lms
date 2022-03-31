@@ -8,6 +8,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.germanium.lms.service.interceptor.context.*;
 import com.germanium.lms.service.interceptor.annotation.Accessible;
 import com.germanium.lms.service.interceptor.annotation.Interceptible;
@@ -22,6 +26,7 @@ import com.germanium.lms.service.interceptor.dispatcher.*;
  */
 public class InterceptibleFramework {
 
+	Logger logger = LoggerFactory.getLogger(InterceptibleFramework.class);
     private HashMap<String, DispatcherRemote> dispatchers = new HashMap<>();
 
     // mapping from method signatures to event names
@@ -37,6 +42,7 @@ public class InterceptibleFramework {
         try {
             registry = LocateRegistry.createRegistry(1099);
         } catch(RemoteException e) {
+			logger.info("registry not found");
         }
 
         for(Method method : this.getClass().getDeclaredMethods()) {
@@ -53,6 +59,7 @@ public class InterceptibleFramework {
                         // bind a dispatcher to the corresponding event name in the register
                         registry.rebind(interceptible.event(), dispatcher);
                     } catch(Exception e) {
+                    	logger.info("registry binding error");
                     }
                 }
             }

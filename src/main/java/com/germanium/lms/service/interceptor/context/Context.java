@@ -4,7 +4,8 @@ import java.lang.reflect.Field;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.germanium.lms.service.interceptor.InterceptibleFramework;
 
 /**
@@ -13,6 +14,7 @@ import com.germanium.lms.service.interceptor.InterceptibleFramework;
  */
 public class Context extends UnicastRemoteObject implements ContextRemote {
 
+	Logger logger = LoggerFactory.getLogger(Context.class);
 	// the server instance that created this context
 	private InterceptibleFramework interceptibleFramework;
 
@@ -32,6 +34,7 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 		try {
 			o = accessibles.get(key).get(interceptibleFramework);
 		} catch (IllegalAccessException e) {
+			logger.info("Value not found");
 		}
 		return o;
 	}
@@ -44,6 +47,7 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 		try {
 			mutables.get(key).set(interceptibleFramework, value);
 		} catch (IllegalAccessException e) {
+			logger.info("Value not set");
 		}
 	}
 
