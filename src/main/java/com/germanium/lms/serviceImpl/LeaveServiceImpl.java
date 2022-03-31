@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,11 +21,9 @@ import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveHistory;
-import com.germanium.lms.model.LeaveHistoryId;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
-import com.germanium.lms.model.dto.MailRequestDto;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -32,6 +31,7 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
@@ -45,10 +45,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
 	private static final String LEAVE_APPLICATION = "Leave Application by User Id : ";
-	private static final String LEAVE_START_DATE = "Leave Start Date:";
-	private static final String LEAVE_TYPE = "Leave type: ";
-	private static final String LEAVE_END_DATE = "Leave End Date: ";
-	private static final String LEAVE_DETAILS = "Leave Details: ";
 
 	@Value("${user.service.url}")
 	private String userService;
@@ -70,6 +66,11 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveRuleService leaveRuleService;
+	
+	IAutoApprove autoApproval =  new AutoApproveCache();  
+
+	@Autowired
+	ITarget target;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -111,7 +112,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 		}
 		return savedRule;
-
 	}
 
 	@Override
@@ -161,12 +161,23 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
 	}
-
+	
+	@Override
+	public void enableAutoApproval() {				
+		// decorate/chain with each rule
+		 autoApproval = new AutoApproveByEmployeeNumber(
+				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
+		
+	}
+	
+	@Override
+	public void disableAutoApproval() {				
+			autoApproval = new AutoApproveCache();
+			
+	}
+	
 	@Override
 	public String autoApproval(Leave leaveRequest) {
-		// decorate/chain with each rule
-		IAutoApprove autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo);
 		return autoApproval.checkApprovalRule(leaveRequest, "approve");
 	}
 
@@ -197,21 +208,9 @@ public class LeaveServiceImpl implements ILeaveService {
 		ActiveLeaves savedLeave = activeLeaveRepo.save(LeaveHelper.dtoToModelMapper(leaveRequest));
 		leaveStatsRepo.save(leaveStats.get());
 
-		String content = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully \n" + LEAVE_DETAILS
-				+ " \n" + LEAVE_TYPE + leaveRequest.getLeaveId() + "\n " + LEAVE_START_DATE + leaveRequest.getFromDate()
-				+ "\n " + LEAVE_END_DATE + leaveRequest.getToDate();
 		String subject = LEAVE_APPLICATION + leaveRequest.getEmployeeId() + " submitted successfully";
-		sendMail(content, subject, leaveRequest.getEmployeeId());
+		(new NotifyLeaveRequest(subject, new Mailer(leaveRequest.getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), leaveRequest)).send();
 		return savedLeave;
-	}
-
-	private void sendMail(String content, String subject, int employeeId) {
-		MailRequestDto mailRequest = new MailRequestDto();
-		mailRequest.setContent(content);
-		mailRequest.setSubject(subject);
-		mailRequest.setUserId(employeeId);
-		restTemplate.postForObject(new StringBuilder(userService).append(NOTIFY_EMAIL_ENDPOINT).toString(), mailRequest,
-				Boolean.class);
 	}
 
 	@Override
@@ -261,14 +260,15 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
-		if (decision.equals("approve")) {
-			leaveHistory.setLeaveStatus("APPROVED");
-			if (optionalLeave.isPresent())
+
+		if (optionalLeave.isPresent()) {
+			if (decision.equals("approve")) {
+				leaveHistory.setLeaveStatus("APPROVED");
 				optionalLeave.get().setLeaveStatus("APPROVED");
-		} else {
-			leaveHistory.setLeaveStatus("REJECTED");
-			if (optionalLeave.isPresent())
+			} else {
+				leaveHistory.setLeaveStatus("REJECTED");
 				optionalLeave.get().setLeaveStatus("REJECTED");
+			}
 		}
 
 		LeaveHistory savedHistory = leaveHistoryRepo.save(leaveHistory);
@@ -286,16 +286,13 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 
 		/* Memento Design Pattern Start */
-		LeaveMementoCareTaker.addMemento(optionalLeave.get(), decision);
+		LeaveMementoCareTaker leaveMementoCareTaker = new LeaveMementoCareTaker();
+
+		leaveMementoCareTaker.addMementoToCache(optionalLeave.get(), decision);
 		/* Memento Design Pattern End */
 
-		String content = "Leave Application by User Id : " + optionalLeave.get().getEmployeeId() + "\n  Decision: "
-				+ leaveHistory.getLeaveStatus() + "\n " + LEAVE_DETAILS + "\n" + LEAVE_TYPE
-				+ optionalLeave.get().getLeaveId() + "\n" + LEAVE_START_DATE + optionalLeave.get().getFromDate() + "\n"
-				+ LEAVE_END_DATE + optionalLeave.get().getToDate();
 		String subject = "Leave Application Decision for Leave Request ID :" + optionalLeave.get().getLeaveRequestId();
-		sendMail(content, subject, optionalLeave.get().getEmployeeId());
-
+		(new NotifyLeaveHistory(subject, new Mailer(optionalLeave.get().getEmployeeId(), userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, leaveHistory.getLeaveStatus())).send();
 		return true;
 
 	}
@@ -323,14 +320,9 @@ public class LeaveServiceImpl implements ILeaveService {
 				logger.info("Approved one pending leave");
 			}
 
-			String content = "Leave Application cancelled successfully for User Id : "
-					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId() + LEAVE_DETAILS + " \n"
-					+ LEAVE_TYPE + optionalLeaveHistory.get().getLeaveId() + "\n " + LEAVE_START_DATE
-					+ optionalLeaveHistory.get().getFromDate() + "\n" + LEAVE_END_DATE
-					+ optionalLeaveHistory.get().getToDate();
-			String subject = "Leave Application Cancelled for User Id : "
-					+ optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
-			sendMail(content, subject, optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId());
+			int id = optionalLeaveHistory.get().getLeaveHistoryId().getEmployeeId();
+			String subject = "Leave Application Cancelled for User Id : "+ id;
+			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), null, optionalLeaveHistory, "cancelled")).send();
 		}
 		if (cancelDecision.equalsIgnoreCase("Withdraw")) {
 			Optional<ActiveLeaves> optionalLeave = activeLeaveRepo.findById(leaveRequestId);
@@ -350,12 +342,9 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeave.get().getDepartmentId())) {
 				logger.info("Approved one pending leave");
 			}
-			String content = "Leave Application withdrawn successfully for User Id : "
-					+ optionalLeave.get().getEmployeeId() + LEAVE_DETAILS + " \n" + LEAVE_TYPE
-					+ optionalLeave.get().getLeaveId() + "\n " + LEAVE_START_DATE + optionalLeave.get().getFromDate()
-					+ "\n " + LEAVE_END_DATE + optionalLeave.get().getToDate();
-			String subject = "Leave Application Cancelled for User Id : " + optionalLeave.get().getEmployeeId();
-			sendMail(content, subject, optionalLeave.get().getEmployeeId());
+			int id = optionalLeave.get().getEmployeeId();
+			String subject = "Leave Application Cancelled for User Id : " + id;
+			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, "withdrawn")).send();
 
 		}
 		return true;
@@ -374,11 +363,9 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveHistoryRepo.save(leaveHistory);
 		activeLeaveRepo.deleteById(selectedLeave.getLeaveRequestId());
 		logger.info("Approved leave request with id {}", selectedLeave.getLeaveRequestId());
-		String content = "Leave Application approved successfully for User Id : " + selectedLeave.getEmployeeId()
-				+ LEAVE_DETAILS + " \n" + LEAVE_TYPE + selectedLeave.getLeaveId() + "\n " + LEAVE_START_DATE
-				+ selectedLeave.getFromDate() + "\n" + LEAVE_END_DATE + selectedLeave.getToDate();
-		String subject = "Leave Application Approved for User Id : " + selectedLeave.getEmployeeId();
-		sendMail(content, subject, selectedLeave.getEmployeeId());
+		int id = selectedLeave.getEmployeeId();
+		String subject = "Leave Application Approved for User Id : " + id;
+		(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), Optional.of(selectedLeave), null, "approved")).send();
 		return true;
 	}
 
@@ -399,8 +386,9 @@ public class LeaveServiceImpl implements ILeaveService {
 	}
 
 	public Boolean undoLeaveDecision(Integer leaveRequestId) throws Exception {
+		LeaveMementoCareTaker leaveMementoCareTaker = new LeaveMementoCareTaker();
 
-		LeaveMemento leaveSnapShot = LeaveMementoCareTaker.getMemento(leaveRequestId);
+		LeaveMemento leaveSnapShot = leaveMementoCareTaker.restoreMemento(leaveRequestId);
 		if(leaveSnapShot.getLeaveStatus().equalsIgnoreCase("APPROVED")) {
 			//Undo Approval
 			return cancelWithdrawLeave(leaveRequestId, "Cancel");
@@ -417,10 +405,16 @@ public class LeaveServiceImpl implements ILeaveService {
 			optionalLeaveHistory.get().setLeaveStatus("APPROVED");
 			leaveHistoryRepo.save(optionalLeaveHistory.get());
 		}
-		
-		
-		
-		
 		return true;
+	}
+	
+	@Scheduled(cron = "0 */2 * ? * *")
+	public void print() {
+		System.out.println(" Cron called");
+	}
+
+	public String getSummary(Integer employeeId, String type) {
+		logger.info("Received request for sending summary of employee {}", employeeId);		
+		return target.getSummary(employeeId, type);
 	}
 }
