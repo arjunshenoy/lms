@@ -21,7 +21,6 @@ import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveHistory;
-import com.germanium.lms.model.LeaveHistoryId;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
@@ -32,6 +31,7 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
@@ -68,7 +68,10 @@ public class LeaveServiceImpl implements ILeaveService {
 	ILeaveRuleService leaveRuleService;
 	
 	IAutoApprove autoApproval =  new AutoApproveCache();  
-	
+
+	@Autowired
+	ITarget target;
+
 	@Override
 	public List<LeaveRules> getLeaveRules() {
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
@@ -401,15 +404,16 @@ public class LeaveServiceImpl implements ILeaveService {
 			optionalLeaveHistory.get().setLeaveStatus("APPROVED");
 			leaveHistoryRepo.save(optionalLeaveHistory.get());
 		}
-		
-		
-		
-		
 		return true;
 	}
 	
 	@Scheduled(cron = "0 */2 * ? * *")
 	public void print() {
 		System.out.println(" Cron called");
+	}
+
+	public String getSummary(Integer employeeId, String type) {
+		logger.info("Received request for sending summary of employee {}", employeeId);		
+		return target.getSummary(employeeId, type);
 	}
 }

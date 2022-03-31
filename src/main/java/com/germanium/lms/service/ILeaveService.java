@@ -41,4 +41,5 @@ public interface ILeaveService {
 	
 	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
 
+	public String getSummary(Integer employeeId, String type);
 }
