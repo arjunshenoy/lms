@@ -36,6 +36,9 @@ import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
 import com.germanium.lms.service.decorator.IAutoApprove;
+import com.germanium.lms.service.interceptor2.Context;
+import com.germanium.lms.service.interceptor2.IContext;
+import com.germanium.lms.service.interceptor2.IDispatcher;
 import com.germanium.lms.utils.LeaveHelper;
 
 @Service
@@ -71,6 +74,9 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ITarget target;
+	
+	@Autowired
+	IDispatcher dispatcher;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -229,8 +235,12 @@ public class LeaveServiceImpl implements ILeaveService {
 		if (optionalLeave.isEmpty()) {
 			throw new ResourceNotFoundException("Leave Request with id: not found " + leaveRequestId);
 		}
-
+		
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
+		
+		IContext context = new Context(this,leaveHistory);
+		dispatcher.dispatch(context);
+		
 		Boolean response = false;
 		try {
 			// Finding approved leaves ending with date of yesterday
