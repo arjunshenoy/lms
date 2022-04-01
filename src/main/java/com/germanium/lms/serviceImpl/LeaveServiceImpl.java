@@ -237,8 +237,9 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
-		
-		IContext context = new Context(this,leaveHistory);
+
+		IContext context=new Context(this,leaveHistory,userService,leaveHistoryRepo);
+
 		dispatcher.dispatch(context);
 		
 		Boolean response = false;
@@ -261,6 +262,7 @@ public class LeaveServiceImpl implements ILeaveService {
 					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 				}
 			}
+			System.out.println("set decision");
 			response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -286,6 +288,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			logger.error("Failed to add leave to hsitory table {}", leaveRequestId);
 			throw new LeaveServiceException("Failed to add leave to history table " + leaveRequestId);
 		} else {
+			System.out.println("delete"+" "+leaveRequestId);
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
 

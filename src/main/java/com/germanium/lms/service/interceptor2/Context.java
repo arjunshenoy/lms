@@ -16,35 +16,47 @@ import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 
 
 public class Context implements IContext {
-	
-	@Autowired
-	ILeaveHistoryRepository leaveHistRepo;
-	
-	@Value("${user.service.url}")
-	private String userService = "http://localhost:8081";
-	
+
+	private final ILeaveService leaveService;
+	private final LeaveHistory leaveHistory;
+	private ILeaveHistoryRepository leaveHistRepo;
+	private String userService;
+
+	public Context(ILeaveService leaveService,LeaveHistory leaveHistory,String userService, ILeaveHistoryRepository leaveHistRepo){
+		this.leaveService=leaveService;
+		this.leaveHistory=leaveHistory;
+		this.userService=userService;
+		this.leaveHistRepo=leaveHistRepo;
+
+	}
+
+	public void turnOffAutoApproval(){
+		leaveService.disableAutoApproval();
+	}
+
+	public void turnOnAutoApproval(){
+		leaveService.enableAutoApproval();
+	}
+
+
 	@Override
-	public void fetchContext(ILeaveService leavService, LeaveHistory leaveHistory) {
+	public int fetchDetails() {
 		Date current = leaveHistory.getFromDate();
 		Date end = leaveHistory.getToDate();
-		float hrs = getParamRequired(userService, "/workHours", leaveHistory.getDepartmentId());
+		int checkHours=0;
 		//String result = prev;
 		while (current.before(end)) {
 			List<LeaveHistory> leaves = getClashLeaves(leaveHistRepo, current);
-			if (leaves.size()*8 > hrs) {
-				System.out.print("event triggered");
-				break;
-				
-			}
+			checkHours=checkHours+leaves.size()*8;
 
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(current);
 			calendar.add(Calendar.DATE, 1);
 			current = calendar.getTime();
 		}
-		
-		return getRejectOrQueue(leaveRequest, result);
-		
+
+		return checkHours;
+
 	}
 
 	@Override
@@ -55,13 +67,24 @@ public class Context implements IContext {
 	protected List<LeaveHistory> getClashLeaves(ILeaveHistoryRepository leaveHistRepo, Date current) {
 		return leaveHistRepo.findClashingLeaves(current);
 	}
-	public float getParamRequired(String userService, String resource, int depId) {
+//	public float getParamRequired(String userService, String resource, int depId) {
+//		RestTemplate restTemplate = new RestTemplate();
+//		String resourceUrl
+//		  = userService + "/api/v1/department/" +depId + resource;
+//		ResponseEntity<Float> response
+//		  = restTemplate.getForEntity(resourceUrl, Float.class);
+//		return response.getBody();
+//	}
+
+	public void updateTheLimitHours(double scale) {
 		RestTemplate restTemplate = new RestTemplate();
+		int depId=leaveHistory.getDepartmentId();
 		String resourceUrl
-		  = userService + "/api/v1/department/" +depId + resource;
-		ResponseEntity<Float> response
-		  = restTemplate.getForEntity(resourceUrl, Float.class);
-		return response.getBody();
+				= this.userService + "/api/v1/department/" +depId + "/workHours";
+		double updatedHours = restTemplate.getForEntity(resourceUrl, Float.class).getBody();
+		updatedHours=updatedHours*scale;
+		restTemplate.put(resourceUrl,updatedHours, Float.class);
+
 	}
 
 }
