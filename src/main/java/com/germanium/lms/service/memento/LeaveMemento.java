@@ -2,7 +2,7 @@ package com.germanium.lms.service.memento;
 
 import java.util.Date;
 
-public class LeaveMemento {
+public class LeaveMemento implements Memento {
 
 	private int leaveRequestId;
 

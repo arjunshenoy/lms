@@ -217,11 +217,7 @@ public class ActiveLeaves implements Serializable {
 
 	/* Functions to support Memento DP */
 
-	public LeaveMemento createMemento() {
 
-		return new LeaveMemento(this.leaveRequestId, this.employeeId, this.dateOfApplication, this.leaveId,
-				this.departmentId, this.fromDate, this.toDate, this.reason, this.comments, this.leaveName,this.leaveStatus);
-	}
 
 	public void restore(LeaveMemento memento) {
 		if (memento != null) {
