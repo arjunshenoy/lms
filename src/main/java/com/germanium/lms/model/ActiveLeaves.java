@@ -215,28 +215,4 @@ public class ActiveLeaves implements Serializable {
 		this.leaveStatus = leaveStatus;
 	}
 
-	/* Functions to support Memento DP */
-
-
-
-	public void restore(LeaveMemento memento) {
-		if (memento != null) {
-			this.leaveRequestId = memento.getLeaveRequestId();
-			this.employeeId = memento.getEmployeeId();
-			this.dateOfApplication = memento.getDateOfApplication();
-			this.leaveId = memento.getLeaveId();
-			this.departmentId = memento.getDepartmentId();
-			this.fromDate = memento.getFromDate();
-			this.toDate = memento.getToDate();
-			this.reason = memento.getReason();
-			this.comments = memento.getComments();
-			this.leaveName = memento.getLeaveName();
-			this.leaveStatus = memento.getLeaveStatus();
-		} else {
-			// throw new LeaveServiceException("Cannot Perform restore with null memento
-			// object");
-
-		}
-	}
-
 }
