@@ -67,10 +67,6 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
-	IAutoApprove autoApproval =  new AutoApproveCache();  
-
-	@Autowired
-	ITarget target;
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -160,25 +156,6 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveStatsRepo.saveAll(leaveStatsList);
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
-	}
-	
-	@Override
-	public void enableAutoApproval() {				
-		// decorate/chain with each rule
-		 autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
-		
-	}
-	
-	@Override
-	public void disableAutoApproval() {				
-			autoApproval = new AutoApproveCache();
-			
-	}
-	
-	@Override
-	public String autoApproval(Leave leaveRequest) {
-		return autoApproval.checkApprovalRule(leaveRequest, "approve");
 	}
 
 	@Override
@@ -406,14 +383,5 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		return true;
 	}
-	
-	@Scheduled(cron = "0 */2 * ? * *")
-	public void print() {
-		System.out.println(" Cron called");
-	}
 
-	public String getSummary(Integer employeeId, String type) {
-		logger.info("Received request for sending summary of employee {}", employeeId);		
-		return target.getSummary(employeeId, type);
-	}
 }

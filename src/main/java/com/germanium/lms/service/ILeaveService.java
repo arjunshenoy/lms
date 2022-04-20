@@ -28,18 +28,19 @@ public interface ILeaveService {
 	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws ResourceNotFoundException, LeaveServiceException;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
-	
+
 	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws LeaveServiceException;
-	
+
 	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
 
-	public void enableAutoApproval();
+	/*
+	 * public void enableAutoApproval();
+	 * 
+	 * public void disableAutoApproval();
+	 */
+//	public String autoApproval(Leave leaveRequest);
 
-	public void disableAutoApproval();
-
-	public String autoApproval(Leave leaveRequest);
-	
 	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
 
-	public String getSummary(Integer employeeId, String type);
+	// public String getSummary(Integer employeeId, String type);
 }
