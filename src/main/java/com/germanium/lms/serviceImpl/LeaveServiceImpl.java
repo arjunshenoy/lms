@@ -38,6 +38,7 @@ import com.germanium.lms.service.memento.LeaveMementoCareTaker;
 import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
 
+
 @Service
 public class LeaveServiceImpl implements ILeaveService {
 
@@ -71,6 +72,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ITarget target;
+
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -341,10 +343,10 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeave.get().getDepartmentId())) {
 				logger.info("Approved one pending leave");
 			}
+
 			int id = optionalLeave.get().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : " + id;
 			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, "withdrawn")).send();
-
 		}
 		return true;
 	}
