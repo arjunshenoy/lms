@@ -3,9 +3,6 @@ package com.germanium.lms.service.interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -27,7 +24,7 @@ import com.germanium.lms.service.interceptor.dispatcher.*;
 public class InterceptibleFramework {
 
 	Logger logger = LoggerFactory.getLogger(InterceptibleFramework.class);
-    private HashMap<String, DispatcherRemote> dispatchers = new HashMap<>();
+    private HashMap<String, Dispatcher> dispatchers = new HashMap<>();
 
     // mapping from method signatures to event names
     private HashMap<String, String> events = new HashMap<>();
@@ -38,13 +35,6 @@ public class InterceptibleFramework {
      * For each method annotated with @Interceptible, create a dispatcher.
      */
     public InterceptibleFramework() {
-        Registry registry = null;
-        try {
-            registry = LocateRegistry.createRegistry(1099);
-        } catch(RemoteException e) {
-			logger.info("registry not found");
-        }
-
         for(Method method : this.getClass().getDeclaredMethods()) {
             Annotation[] annotations = method.getDeclaredAnnotations();
             for(Annotation annotation : annotations){
@@ -52,15 +42,9 @@ public class InterceptibleFramework {
                     Interceptible interceptible = (Interceptible) annotation;
                     // associate a method signature with an event
                     events.put(method.toString(), interceptible.event());
-                    try {
-                        Dispatcher dispatcher = new Dispatcher();
-                        // associate an event with a dispatcher
-                        dispatchers.put(interceptible.event(), dispatcher);
-                        // bind a dispatcher to the corresponding event name in the register
-                        registry.rebind(interceptible.event(), dispatcher);
-                    } catch(Exception e) {
-                    	logger.info("registry binding error");
-                    }
+					Dispatcher dispatcher = new Dispatcher();
+					// associate an event with a dispatcher
+					dispatchers.put(interceptible.event(), dispatcher);
                 }
             }
         }
@@ -70,15 +54,23 @@ public class InterceptibleFramework {
      * Accessor
      *
      */
-    HashMap<String, String> getEvents() {
+    public HashMap<String, String> getEvents() {
         return events;
+    }
+    
+    protected void setInterceptor(Interceptor i, String event) {
+    	dispatchers.get(event).register(i);
+    }
+    
+    protected void rmInterceptor(Interceptor i, String event) {
+    	dispatchers.get(event).remove(i);;
     }
 
     /**
      * Create a context.
      *
      */
-    Context createContext(String event) throws RemoteException {
+    public Context createContext(String event) {
         //System.out.println("Creating a context on event " + event);
         Context context = new Context(this);
         setAccessibles(context, event);
@@ -102,7 +94,7 @@ public class InterceptibleFramework {
         } // end outer for
     }
     
-    void setMutables(Context context, String event) {
+    public void setMutables(Context context, String event) {
     	// look for fields that are associated with the event
         for(Field field : this.getClass().getDeclaredFields()) {
             Annotation[] annotations = field.getDeclaredAnnotations();
@@ -122,7 +114,7 @@ public class InterceptibleFramework {
      * Invoke a dispatcher.
      *
      *     */
-    void invokeDispatcher(String event, Context context) {
+    public void invokeDispatcher(String event, Context context) {
         //System.out.println("Invoking dispatcher " + event);
         dispatchers.get(event).dispatch(context);
     }

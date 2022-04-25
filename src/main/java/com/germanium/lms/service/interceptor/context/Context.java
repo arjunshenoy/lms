@@ -1,8 +1,6 @@
 package com.germanium.lms.service.interceptor.context;
 
 import java.lang.reflect.Field;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,7 @@ import com.germanium.lms.service.interceptor.InterceptibleFramework;
  * This class defines accessor and mutator methods that allow a concrete
  * interceptor to access and modify a server's internal state.
  */
-public class Context extends UnicastRemoteObject implements ContextRemote {
+public class Context {
 
 	Logger logger = LoggerFactory.getLogger(Context.class);
 	// the server instance that created this context
@@ -21,7 +19,7 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 	private HashMap<String, Field> accessibles = new HashMap<>();
 	private HashMap<String, Field> mutables = new HashMap<>();
 
-	public Context(InterceptibleFramework interceptibleFramework) throws RemoteException {
+	public Context(InterceptibleFramework interceptibleFramework) {
 		this.interceptibleFramework = interceptibleFramework;
 	}
 
@@ -29,7 +27,7 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 	 * Accessor
 	 *
 	 */
-	public Object getValue(String key) throws RemoteException {
+	public Object getValue(String key) {
 		Object o = null;
 		try {
 			o = accessibles.get(key).get(interceptibleFramework);
@@ -43,7 +41,7 @@ public class Context extends UnicastRemoteObject implements ContextRemote {
 	 * Mutator
 	 *
 	 */
-	public void setValue(String key, Object value) throws RemoteException {
+	public void setValue(String key, Object value) {
 		try {
 			mutables.get(key).set(interceptibleFramework, value);
 		} catch (IllegalAccessException e) {
