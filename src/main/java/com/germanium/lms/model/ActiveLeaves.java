@@ -16,6 +16,9 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.germanium.lms.exception.LeaveServiceException;
+import com.germanium.lms.service.memento.LeaveMemento;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -89,6 +92,8 @@ public class ActiveLeaves implements Serializable {
 	@Transient
 	private Float payScale;
 
+	@Transient
+	private String leaveStatus;
 
 	public int getLeaveRequestId() {
 		return leaveRequestId;
@@ -200,6 +205,42 @@ public class ActiveLeaves implements Serializable {
 
 	public void setPayScale(Float payScale) {
 		this.payScale = payScale;
+	}
+
+	public String getLeaveStatus() {
+		return leaveStatus;
+	}
+
+	public void setLeaveStatus(String leaveStatus) {
+		this.leaveStatus = leaveStatus;
+	}
+
+	/* Functions to support Memento DP */
+
+	public LeaveMemento createMemento() {
+
+		return new LeaveMemento(this.leaveRequestId, this.employeeId, this.dateOfApplication, this.leaveId,
+				this.departmentId, this.fromDate, this.toDate, this.reason, this.comments, this.leaveName,this.leaveStatus);
+	}
+
+	public void restore(LeaveMemento memento) {
+		if (memento != null) {
+			this.leaveRequestId = memento.getLeaveRequestId();
+			this.employeeId = memento.getEmployeeId();
+			this.dateOfApplication = memento.getDateOfApplication();
+			this.leaveId = memento.getLeaveId();
+			this.departmentId = memento.getDepartmentId();
+			this.fromDate = memento.getFromDate();
+			this.toDate = memento.getToDate();
+			this.reason = memento.getReason();
+			this.comments = memento.getComments();
+			this.leaveName = memento.getLeaveName();
+			this.leaveStatus = memento.getLeaveStatus();
+		} else {
+			// throw new LeaveServiceException("Cannot Perform restore with null memento
+			// object");
+
+		}
 	}
 
 }

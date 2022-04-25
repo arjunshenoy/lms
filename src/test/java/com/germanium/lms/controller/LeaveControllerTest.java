@@ -36,6 +36,7 @@ import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.serviceImpl.AutoApproveInvoker;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(value = LeaveController.class)
@@ -46,6 +47,9 @@ public class LeaveControllerTest {
 
 	@MockBean
 	ILeaveService leaveService;
+	
+	@MockBean
+	AutoApproveInvoker invoker;
 
 	@InjectMocks
 	private LeaveController leaveController;
