@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,10 +20,11 @@ import com.germanium.lms.exception.LeaveServiceException;
 import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveHistory;
-import com.germanium.lms.model.LeaveHistoryId;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
+import com.germanium.lms.model.dto.Department;
+import com.germanium.lms.model.dto.Manager;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -33,10 +33,12 @@ import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
 import com.germanium.lms.service.iterator.Iterator;
+import com.germanium.lms.service.lazy.ManagerList;
+import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
-import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
+
 
 @Service
 public class LeaveServiceImpl implements ILeaveService {
@@ -67,8 +69,8 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
-	IAutoApprove autoApproval =  new AutoApproveCache();  
-	
+
+
 	@Override
 	public List<LeaveRules> getLeaveRules() {
 		return (List<LeaveRules>) leaveRulesRepo.findAll();
@@ -158,25 +160,6 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
 	}
-	
-	@Override
-	public void enableAutoApproval() {				
-		// decorate/chain with each rule
-		 autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
-		
-	}
-	
-	@Override
-	public void disableAutoApproval() {				
-			autoApproval = new AutoApproveCache();
-			
-	}
-	
-	@Override
-	public String autoApproval(Leave leaveRequest) {
-		return autoApproval.checkApprovalRule(leaveRequest, "approve");
-	}
 
 	@Override
 	@Transactional
@@ -257,6 +240,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
+
 		if (optionalLeave.isPresent()) {
 			if (decision.equals("approve")) {
 				leaveHistory.setLeaveStatus("APPROVED");
@@ -338,10 +322,10 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeave.get().getDepartmentId())) {
 				logger.info("Approved one pending leave");
 			}
+
 			int id = optionalLeave.get().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : " + id;
 			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, "withdrawn")).send();
-
 		}
 		return true;
 	}
@@ -401,15 +385,16 @@ public class LeaveServiceImpl implements ILeaveService {
 			optionalLeaveHistory.get().setLeaveStatus("APPROVED");
 			leaveHistoryRepo.save(optionalLeaveHistory.get());
 		}
-		
-		
-		
-		
 		return true;
 	}
-	
-	@Scheduled(cron = "0 */2 * ? * *")
-	public void print() {
-		System.out.println(" Cron called");
+
+
+	@Override
+	public List<Manager> getManagers(String departmentName) {
+		ManagerList managerList = new ManagerListProxyImpl();
+		Department department = new Department("Computer", 10, 5, managerList);
+		managerList = department.getManagerList();
+		return managerList.getManagerList(departmentName);
 	}
+
 }

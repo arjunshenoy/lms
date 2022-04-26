@@ -1,11 +1,11 @@
 package com.germanium.lms.serviceImpl;
 
-import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.service.command.ICommand;
 
 public class TurnOffAutoApproveCommand implements ICommand {
-	ILeaveService leaveService;
-	public TurnOffAutoApproveCommand(ILeaveService leaveService) {
+	ILeaveUtilService leaveService;
+	public TurnOffAutoApproveCommand(ILeaveUtilService leaveService) {
 		super();
 		this.leaveService = leaveService;
 	}
