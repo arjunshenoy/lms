@@ -15,4 +15,10 @@ public class TurnOnAutoApproveCommand implements ICommand{
 		leaveService.enableAutoApproval();
 		
 	}
+
+	@Override
+	public void undo() {
+		leaveService.disableAutoApproval();
+		
+	}
 }
