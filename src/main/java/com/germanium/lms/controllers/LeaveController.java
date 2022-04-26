@@ -30,6 +30,7 @@ import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.command.ICommand;
 import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.serviceImpl.AutoApproveInvoker;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
@@ -106,14 +107,20 @@ public class LeaveController {
 	
 	@GetMapping("enableDisableAutoApprove/{button}")
 	public void enableDisableAutoApprove(@PathVariable("button") String button){
-		
+		 
 	    if (button.equalsIgnoreCase("on")) {
 	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveutilService));
 	 	    invoker.buttonPressed();
+	    	
 	    }
 	    if (button.equalsIgnoreCase("off")) {
 	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveutilService));
 		    invoker.buttonPressed();
+	    }
+	    
+	    if (button.equalsIgnoreCase("undo")) {
+		    invoker.undoButton();
+	    	
 	    }
 	}
 

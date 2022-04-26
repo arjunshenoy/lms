@@ -12,7 +12,13 @@ public class TurnOffAutoApproveCommand implements ICommand {
 
 	@Override
 	public void execute() {
-		leaveService.disableAutoApproval();;
+		leaveService.disableAutoApproval();
+		
+	}
+
+	@Override
+	public void undo() {
+		leaveService.enableAutoApproval();
 		
 	}
 }
