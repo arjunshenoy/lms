@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,14 +32,19 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
-import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.lazy.ManagerList;
 import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
+
 import com.germanium.lms.service.decorator.IAutoApprove;
+import com.germanium.lms.service.interceptor2.Context;
+import com.germanium.lms.service.interceptor2.IContext;
+import com.germanium.lms.service.interceptor2.IDispatcher;
+
 import com.germanium.lms.utils.LeaveHelper;
+
 
 @Service
 public class LeaveServiceImpl implements ILeaveService {
@@ -71,10 +75,13 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
-	IAutoApprove autoApproval =  new AutoApproveCache();  
 
 	@Autowired
 	ITarget target;
+	
+	@Autowired
+	IDispatcher dispatcher;
+
 
 	@Override
 	public List<LeaveRules> getLeaveRules() {
@@ -165,25 +172,6 @@ public class LeaveServiceImpl implements ILeaveService {
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
 	}
-	
-	@Override
-	public void enableAutoApproval() {				
-		// decorate/chain with each rule
-		 autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
-		
-	}
-	
-	@Override
-	public void disableAutoApproval() {				
-			autoApproval = new AutoApproveCache();
-			
-	}
-	
-	@Override
-	public String autoApproval(Leave leaveRequest) {
-		return autoApproval.checkApprovalRule(leaveRequest, "approve");
-	}
 
 	@Override
 	@Transactional
@@ -233,8 +221,13 @@ public class LeaveServiceImpl implements ILeaveService {
 		if (optionalLeave.isEmpty()) {
 			throw new ResourceNotFoundException("Leave Request with id: not found " + leaveRequestId);
 		}
-
+		
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
+
+		IContext context=new Context(this,leaveHistory,userService,leaveHistoryRepo);
+
+		dispatcher.dispatch(context);
+		
 		Boolean response = false;
 		try {
 			// Finding approved leaves ending with date of yesterday
@@ -255,6 +248,7 @@ public class LeaveServiceImpl implements ILeaveService {
 					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 				}
 			}
+			System.out.println("set decision");
 			response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -264,6 +258,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
+
 		if (optionalLeave.isPresent()) {
 			if (decision.equals("approve")) {
 				leaveHistory.setLeaveStatus("APPROVED");
@@ -280,6 +275,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			logger.error("Failed to add leave to hsitory table {}", leaveRequestId);
 			throw new LeaveServiceException("Failed to add leave to history table " + leaveRequestId);
 		} else {
+			System.out.println("delete"+" "+leaveRequestId);
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
 
@@ -345,10 +341,10 @@ public class LeaveServiceImpl implements ILeaveService {
 					optionalLeave.get().getDepartmentId())) {
 				logger.info("Approved one pending leave");
 			}
+
 			int id = optionalLeave.get().getEmployeeId();
 			String subject = "Leave Application Cancelled for User Id : " + id;
 			(new NotifyLeaveHistory(subject, new Mailer(id, userService, NOTIFY_EMAIL_ENDPOINT, restTemplate), optionalLeave, null, "withdrawn")).send();
-
 		}
 		return true;
 	}
@@ -410,16 +406,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		return true;
 	}
-	
-	@Scheduled(cron = "0 */2 * ? * *")
-	public void print() {
-		System.out.println(" Cron called");
-	}
 
-	public String getSummary(Integer employeeId, String type) {
-		logger.info("Received request for sending summary of employee {}", employeeId);		
-		return target.getSummary(employeeId, type);
-	}
 
 	@Override
 	public List<Manager> getManagers(String departmentName) {
@@ -428,4 +415,5 @@ public class LeaveServiceImpl implements ILeaveService {
 		managerList = department.getManagerList();
 		return managerList.getManagerList(departmentName);
 	}
+
 }
