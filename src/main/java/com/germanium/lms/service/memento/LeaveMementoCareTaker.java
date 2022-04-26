@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.germanium.lms.model.ActiveLeaves;
 
-public class LeaveMementoCareTaker implements MementoCareTaker {
-
+public class LeaveMementoCareTaker implements MementoCareTaker, IMemento {
+ 
 	protected static Map<Integer, LeaveMemento> mementoHistory = new HashMap<Integer, LeaveMemento>();
 
 	public LeaveMemento createNewActiveLeaveMemento(ActiveLeaves activeLeave) {
