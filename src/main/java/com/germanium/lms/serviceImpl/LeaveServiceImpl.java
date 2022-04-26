@@ -240,6 +240,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
+
 		if (optionalLeave.isPresent()) {
 			if (decision.equals("approve")) {
 				leaveHistory.setLeaveStatus("APPROVED");
