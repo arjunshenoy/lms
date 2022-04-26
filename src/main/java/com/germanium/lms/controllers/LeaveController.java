@@ -31,6 +31,7 @@ import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
 
+
 import com.germanium.lms.service.command.ICommand;
 import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.service.command.ICommand;
@@ -46,9 +47,6 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
-	
-	@Autowired
-	ILeaveUtilService leaveutilService;
 
 	@Autowired
     private ModelMapper modelMapper;
@@ -110,20 +108,14 @@ public class LeaveController {
 	
 	@GetMapping("enableDisableAutoApprove/{button}")
 	public void enableDisableAutoApprove(@PathVariable("button") String button){
-		 
+		
 	    if (button.equalsIgnoreCase("on")) {
-	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveutilService));
+	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveService));
 	 	    invoker.buttonPressed();
-	    	
 	    }
 	    if (button.equalsIgnoreCase("off")) {
-	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveutilService));
+	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveService));
 		    invoker.buttonPressed();
-	    }
-	    
-	    if (button.equalsIgnoreCase("undo")) {
-		    invoker.undoButton();
-	    	
 	    }
 	}
 
@@ -132,7 +124,7 @@ public class LeaveController {
 
 		Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
 		ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
-		String autoApproval = leaveutilService.autoApproval(leaveObject);
+		String autoApproval = leaveService.autoApproval(leaveObject);
 		if (!autoApproval.equals("queue")) // if queued leave it in active leaves
 			takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 	}
@@ -178,7 +170,7 @@ public class LeaveController {
 	@PostMapping("getsummary/{type}/{employeeId}")
 	public ResponseEntity<String> getSummary(@PathVariable("employeeId") int employeeId, @PathVariable("type") String type) {
 		try {
-			return ResponseEntity.ok().body(leaveutilService.getSummary(employeeId, type));
+			return ResponseEntity.ok().body(leaveService.getSummary(employeeId, type));
 		} catch (Exception e) {
 			return ResponseEntity.ok().body("Error");
 		}
