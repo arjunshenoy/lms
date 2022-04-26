@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,13 +32,11 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
-import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.lazy.ManagerList;
 import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
-import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.utils.LeaveHelper;
 
 
@@ -72,10 +69,6 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
-	IAutoApprove autoApproval =  new AutoApproveCache();  
-
-	@Autowired
-	ITarget target;
 
 
 	@Override
@@ -166,25 +159,6 @@ public class LeaveServiceImpl implements ILeaveService {
 		leaveStatsRepo.saveAll(leaveStatsList);
 		logger.info("Rule statistics creation done successfully {}", userId);
 		return true;
-	}
-	
-	@Override
-	public void enableAutoApproval() {				
-		// decorate/chain with each rule
-		 autoApproval = new AutoApproveByEmployeeNumber(
-				new AutoApproveByHours(new AutoApproveQueue(), leaveHistoryRepo), leaveHistoryRepo); 		
-		
-	}
-	
-	@Override
-	public void disableAutoApproval() {				
-			autoApproval = new AutoApproveCache();
-			
-	}
-	
-	@Override
-	public String autoApproval(Leave leaveRequest) {
-		return autoApproval.checkApprovalRule(leaveRequest, "approve");
 	}
 
 	@Override
@@ -412,16 +386,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		}
 		return true;
 	}
-	
-	@Scheduled(cron = "0 */2 * ? * *")
-	public void print() {
-		System.out.println(" Cron called");
-	}
 
-	public String getSummary(Integer employeeId, String type) {
-		logger.info("Received request for sending summary of employee {}", employeeId);		
-		return target.getSummary(employeeId, type);
-	}
 
 	@Override
 	public List<Manager> getManagers(String departmentName) {
@@ -430,4 +395,5 @@ public class LeaveServiceImpl implements ILeaveService {
 		managerList = department.getManagerList();
 		return managerList.getManagerList(departmentName);
 	}
+
 }
