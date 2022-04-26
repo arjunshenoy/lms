@@ -7,6 +7,7 @@ import com.germanium.lms.exception.ResourceNotFoundException;
 import com.germanium.lms.model.ActiveLeaves;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
+import com.germanium.lms.model.dto.Manager;
 import com.germanium.lms.model.factory.Leave;
 
 public interface ILeaveService {
@@ -28,18 +29,21 @@ public interface ILeaveService {
 	public ActiveLeaves createLeaveRequest(Leave leaveRequest) throws ResourceNotFoundException, LeaveServiceException;
 
 	public ActiveLeaves getActiveLeavesById(Integer leaveId);
-	
+
 	public Boolean takeLeaveDecision(Integer leaveId, String decision) throws LeaveServiceException;
-	
+
 	public Boolean cancelWithdrawLeave(Integer leaveId, String cancelDecision);
 
-	public void enableAutoApproval();
+	/*
+	 * public void enableAutoApproval();
+	 * 
+	 * public void disableAutoApproval();
+	 */
+//	public String autoApproval(Leave leaveRequest);
 
-	public void disableAutoApproval();
-
-	public String autoApproval(Leave leaveRequest);
-	
 	public Boolean undoLeaveDecision(Integer leaveId) throws Exception;
 
-	public String getSummary(Integer employeeId, String type);
+
+	
+	public List<Manager> getManagers(String departmentName);
 }

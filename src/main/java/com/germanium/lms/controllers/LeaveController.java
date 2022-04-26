@@ -1,5 +1,6 @@
 package com.germanium.lms.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -29,6 +30,10 @@ import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
+
+import com.germanium.lms.service.ILeaveUtilService;
+import com.germanium.lms.service.command.ICommand;
+
 import com.germanium.lms.serviceImpl.AutoApproveInvoker;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 import com.germanium.lms.serviceImpl.TurnOffAutoApproveCommand;
@@ -40,6 +45,9 @@ public class LeaveController {
 
 	@Autowired
 	ILeaveService leaveService;
+	
+	@Autowired
+	ILeaveUtilService leaveutilService;
 
 	@Autowired
     private ModelMapper modelMapper;
@@ -101,14 +109,20 @@ public class LeaveController {
 	
 	@GetMapping("enableDisableAutoApprove/{button}")
 	public void enableDisableAutoApprove(@PathVariable("button") String button){
-		
+		 
 	    if (button.equalsIgnoreCase("on")) {
-	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveService));
+	    	invoker.setCommand(new TurnOnAutoApproveCommand(leaveutilService));
 	 	    invoker.buttonPressed();
+	    	
 	    }
 	    if (button.equalsIgnoreCase("off")) {
-	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveService));
+	    	invoker.setCommand(new TurnOffAutoApproveCommand(leaveutilService));
 		    invoker.buttonPressed();
+	    }
+	    
+	    if (button.equalsIgnoreCase("undo")) {
+		    invoker.undoButton();
+	    	
 	    }
 	}
 
@@ -117,7 +131,7 @@ public class LeaveController {
 
 		Leave leaveObject = LeaveFactory.getNewLeaveObject(leaveRequest);
 		ActiveLeaves savedLeave = leaveService.createLeaveRequest(leaveObject);
-		String autoApproval = leaveService.autoApproval(leaveObject);
+		String autoApproval = leaveutilService.autoApproval(leaveObject);
 		if (!autoApproval.equals("queue")) // if queued leave it in active leaves
 			takeLeaveDecision(savedLeave.getLeaveRequestId(), autoApproval);
 	}
@@ -163,9 +177,19 @@ public class LeaveController {
 	@PostMapping("getsummary/{type}/{employeeId}")
 	public ResponseEntity<String> getSummary(@PathVariable("employeeId") int employeeId, @PathVariable("type") String type) {
 		try {
-			return ResponseEntity.ok().body(leaveService.getSummary(employeeId, type));
+			return ResponseEntity.ok().body(leaveutilService.getSummary(employeeId, type));
 		} catch (Exception e) {
 			return ResponseEntity.ok().body("Error");
+		}
+
+	}
+	
+	@PostMapping("getmanager/{departmentName}")
+	public ResponseEntity<List<?>> getManagers(@PathVariable("departmentName") String departmentName) {
+		try {
+			return ResponseEntity.ok().body(leaveService.getManagers(departmentName));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(new ArrayList<>());
 		}
 
 	}
