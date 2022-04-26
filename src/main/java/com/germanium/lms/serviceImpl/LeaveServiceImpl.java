@@ -37,6 +37,12 @@ import com.germanium.lms.service.lazy.ManagerList;
 import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
+
+import com.germanium.lms.service.decorator.IAutoApprove;
+import com.germanium.lms.service.interceptor2.Context;
+import com.germanium.lms.service.interceptor2.IContext;
+import com.germanium.lms.service.interceptor2.IDispatcher;
+
 import com.germanium.lms.utils.LeaveHelper;
 
 
@@ -69,6 +75,12 @@ public class LeaveServiceImpl implements ILeaveService {
 	@Autowired
 	ILeaveRuleService leaveRuleService;
 	
+
+	@Autowired
+	ITarget target;
+	
+	@Autowired
+	IDispatcher dispatcher;
 
 
 	@Override
@@ -209,8 +221,13 @@ public class LeaveServiceImpl implements ILeaveService {
 		if (optionalLeave.isEmpty()) {
 			throw new ResourceNotFoundException("Leave Request with id: not found " + leaveRequestId);
 		}
-
+		
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
+
+		IContext context=new Context(this,leaveHistory,userService,leaveHistoryRepo);
+
+		dispatcher.dispatch(context);
+		
 		Boolean response = false;
 		try {
 			// Finding approved leaves ending with date of yesterday
@@ -231,6 +248,7 @@ public class LeaveServiceImpl implements ILeaveService {
 					response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 				}
 			}
+			System.out.println("set decision");
 			response = setDecision(leaveHistory, optionalLeave, leaveRequestId, decision);
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -257,6 +275,7 @@ public class LeaveServiceImpl implements ILeaveService {
 			logger.error("Failed to add leave to hsitory table {}", leaveRequestId);
 			throw new LeaveServiceException("Failed to add leave to history table " + leaveRequestId);
 		} else {
+			System.out.println("delete"+" "+leaveRequestId);
 			activeLeaveRepo.deleteById(leaveRequestId);
 		}
 
