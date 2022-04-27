@@ -44,6 +44,7 @@ import com.germanium.lms.service.interceptor2.IContext;
 import com.germanium.lms.service.interceptor2.IDispatcher;
 
 import com.germanium.lms.utils.LeaveHelper;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 
 @Service
@@ -53,6 +54,7 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	private static final String NOTIFY_EMAIL_ENDPOINT = "/mail/leave/notify";
 	private static final String LEAVE_APPLICATION = "Leave Application by User Id : ";
+	private static final String USER_DETAILS_ENDPOINT = "/api/v1/user/profiles/query";
 
 	@Value("${user.service.url}")
 	private String userService;
@@ -414,5 +416,17 @@ public class LeaveServiceImpl implements ILeaveService {
 		managerList = department.getManagerList();
 		return managerList.getManagerList(departmentName);
 	}
+	
+	@HystrixCommand(fallbackMethod = "getDefaultUsers")
+	public List<Integer> getUsersForRuleCondition(String expression) {
+	return restTemplate.postForObject(
+	new StringBuilder(userService).append(USER_DETAILS_ENDPOINT).toString(),
+	expression, List.class);
+	}
+
+	private List<Integer> defaultGreeting() {
+	return restTemplate.getForObject(
+	new StringBuilder(userService).append(USER_DETAILS_ENDPOINT).toString(),
+	List.class); }
 
 }
