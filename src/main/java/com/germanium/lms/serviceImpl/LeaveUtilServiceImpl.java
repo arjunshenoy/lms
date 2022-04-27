@@ -3,6 +3,7 @@ package com.germanium.lms.serviceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -10,6 +11,7 @@ import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.decorator.IAutoApprove;
 
+@Service
 public class LeaveUtilServiceImpl implements ILeaveUtilService {
 
 	Logger logger = LoggerFactory.getLogger(LeaveUtilServiceImpl.class);
