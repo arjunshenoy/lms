@@ -24,6 +24,8 @@ import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.model.LeaveRules;
 import com.germanium.lms.model.LeaveStats;
 import com.germanium.lms.model.LeaveStatsId;
+import com.germanium.lms.model.dto.Department;
+import com.germanium.lms.model.dto.Manager;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.repository.IActiveLeaveRepository;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
@@ -33,6 +35,8 @@ import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
 import com.germanium.lms.service.adapter.ITarget;
 import com.germanium.lms.service.iterator.Iterator;
+import com.germanium.lms.service.lazy.ManagerList;
+import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
 import com.germanium.lms.service.decorator.IAutoApprove;
@@ -260,7 +264,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	public Boolean setDecision(LeaveHistory leaveHistory, Optional<ActiveLeaves> optionalLeave, Integer leaveRequestId,
 			String decision) throws Exception {
-
 		if (optionalLeave.isPresent()) {
 			if (decision.equals("approve")) {
 				leaveHistory.setLeaveStatus("APPROVED");
@@ -416,5 +419,13 @@ public class LeaveServiceImpl implements ILeaveService {
 	public String getSummary(Integer employeeId, String type) {
 		logger.info("Received request for sending summary of employee {}", employeeId);		
 		return target.getSummary(employeeId, type);
+	}
+
+	@Override
+	public List<Manager> getManagers(String departmentName) {
+		ManagerList managerList = new ManagerListProxyImpl();
+		Department department = new Department("Computer", 10, 5, managerList);
+		managerList = department.getManagerList();
+		return managerList.getManagerList(departmentName);
 	}
 }

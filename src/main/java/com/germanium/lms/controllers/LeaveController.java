@@ -1,5 +1,6 @@
 package com.germanium.lms.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -29,6 +30,12 @@ import com.germanium.lms.model.dto.Log;
 import com.germanium.lms.model.factory.Leave;
 import com.germanium.lms.model.factory.LeaveFactory;
 import com.germanium.lms.service.ILeaveService;
+
+
+import com.germanium.lms.service.command.ICommand;
+import com.germanium.lms.service.ILeaveUtilService;
+import com.germanium.lms.service.command.ICommand;
+
 import com.germanium.lms.serviceImpl.AutoApproveInvoker;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 import com.germanium.lms.serviceImpl.TurnOffAutoApproveCommand;
@@ -166,6 +173,16 @@ public class LeaveController {
 			return ResponseEntity.ok().body(leaveService.getSummary(employeeId, type));
 		} catch (Exception e) {
 			return ResponseEntity.ok().body("Error");
+		}
+
+	}
+	
+	@PostMapping("getmanager/{departmentName}")
+	public ResponseEntity<List<?>> getManagers(@PathVariable("departmentName") String departmentName) {
+		try {
+			return ResponseEntity.ok().body(leaveService.getManagers(departmentName));
+		} catch (Exception e) {
+			return ResponseEntity.ok().body(new ArrayList<>());
 		}
 
 	}
