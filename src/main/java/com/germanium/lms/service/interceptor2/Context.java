@@ -12,17 +12,18 @@ import org.springframework.web.client.RestTemplate;
 import com.germanium.lms.model.LeaveHistory;
 import com.germanium.lms.repository.ILeaveHistoryRepository;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.serviceImpl.LeaveServiceImpl;
 
 
 public class Context implements IContext {
 
-	private final ILeaveService leaveService;
+	private final ILeaveUtilService leaveService;
 	private final LeaveHistory leaveHistory;
 	private ILeaveHistoryRepository leaveHistRepo;
 	private String userService;
 
-	public Context(ILeaveService leaveService,LeaveHistory leaveHistory,String userService, ILeaveHistoryRepository leaveHistRepo){
+	public Context(ILeaveUtilService leaveService,LeaveHistory leaveHistory,String userService, ILeaveHistoryRepository leaveHistRepo){
 		this.leaveService=leaveService;
 		this.leaveHistory=leaveHistory;
 		this.userService=userService;

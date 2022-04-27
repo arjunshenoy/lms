@@ -38,7 +38,6 @@ import com.germanium.lms.service.lazy.ManagerListProxyImpl;
 import com.germanium.lms.service.memento.LeaveMemento;
 import com.germanium.lms.service.memento.LeaveMementoCareTaker;
 
-import com.germanium.lms.service.decorator.IAutoApprove;
 import com.germanium.lms.service.interceptor2.Context;
 import com.germanium.lms.service.interceptor2.IContext;
 import com.germanium.lms.service.interceptor2.IDispatcher;
@@ -74,10 +73,6 @@ public class LeaveServiceImpl implements ILeaveService {
 
 	@Autowired
 	ILeaveRuleService leaveRuleService;
-	
-
-	@Autowired
-	ITarget target;
 	
 	@Autowired
 	IDispatcher dispatcher;
