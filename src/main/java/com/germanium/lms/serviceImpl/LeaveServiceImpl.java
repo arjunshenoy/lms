@@ -32,6 +32,7 @@ import com.germanium.lms.repository.ILeaveRulesRepository;
 import com.germanium.lms.repository.ILeaveStatisticsRepository;
 import com.germanium.lms.service.ILeaveRuleService;
 import com.germanium.lms.service.ILeaveService;
+import com.germanium.lms.service.ILeaveUtilService;
 import com.germanium.lms.service.iterator.Iterator;
 import com.germanium.lms.service.lazy.ManagerList;
 import com.germanium.lms.service.lazy.ManagerListProxyImpl;
@@ -76,6 +77,9 @@ public class LeaveServiceImpl implements ILeaveService {
 	
 	@Autowired
 	IDispatcher dispatcher;
+	
+	@Autowired
+	ILeaveUtilService leaveUtilService;
 
 
 	@Override
@@ -219,7 +223,7 @@ public class LeaveServiceImpl implements ILeaveService {
 		
 		LeaveHistory leaveHistory = LeaveHelper.copyActiveToHistory(optionalLeave.get());
 
-		IContext context=new Context(this,leaveHistory,userService,leaveHistoryRepo);
+		IContext context=new Context(leaveUtilService,leaveHistory,userService,leaveHistoryRepo);
 
 		dispatcher.dispatch(context);
 		
